@@ -1,0 +1,19 @@
+package com.trinity.wordsrcite.wordsrcite.viewholder;
+
+import android.view.View;
+import android.widget.TextView;
+
+import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
+
+/**
+ * Created by dzc on 16/1/22.
+ */
+public class StringViewHolder extends UltimateRecyclerviewViewHolder{
+    public TextView tv;
+    public StringViewHolder(View itemView, boolean isItem) {
+        super(itemView);
+        if(isItem){
+            tv = (TextView) itemView;
+        }
+    }
+}
