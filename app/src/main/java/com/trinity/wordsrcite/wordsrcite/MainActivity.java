@@ -1,6 +1,7 @@
 package com.trinity.wordsrcite.wordsrcite;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.nfc.Tag;
@@ -31,7 +32,7 @@ import javax.xml.parsers.SAXParserFactory;
  * MiniActivity 精简版合成
  * SaveFileActivity 保存合成后的音频
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,34 +40,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initButtons();
         initPermission();
-        initParse();
     }
 
-    private void initParse() {
-        try {
-            // 创建一个工厂对象
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            // 通过工厂对象得到一个解析器对象
-            SAXParser parser = factory.newSAXParser();
-            // 通过parser得到XMLReader对象
-            XMLReader reader = parser.getXMLReader();
-            // 为reader对象注册事件处理接口
-            XmlUtils util = new XmlUtils();
-            XmlUtils.MyHandler handler = util.new MyHandler();
-            reader.setContentHandler(handler);
-            // 解析指定XML字符串对象
-            InputStream is = this.getAssets().open("GRE.xml");
-            InputSource source = new InputSource(is);
-            reader.parse(source);
-            Log.i("Main",handler.getList().toString());
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     private void initButtons() {
         Button b1 = (Button) findViewById(R.id.synthButton);
@@ -92,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }); // 保存合成后的音频
     }
+
+
 
     /**
      * android 6.0 以上需要动态申请权限

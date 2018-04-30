@@ -100,7 +100,7 @@ public class AutoCheck {
     }
 
     private AutoCheck innerCheck(InitConfig config) {
-        checks.put("检查申请的Android权限", new PermissionCheck(context));
+//        checks.put("检查申请的Android权限", new PermissionCheck(context));
         checks.put("检查4个so文件是否存在", new JniCheck(context));
         checks.put("检查AppId AppKey SecretKey",
                 new AppInfoCheck(config.getAppId(), config.getAppKey(), config.getSecretKey()));
@@ -193,40 +193,40 @@ public class AutoCheck {
         public boolean withLogOnSuccess = false;
     }
 
-    private static class PermissionCheck extends Check {
-        private Context context;
-
-        public PermissionCheck(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public void check() {
-            String[] permissions = {
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                    // Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    // Manifest.permission.WRITE_SETTINGS,
-                    Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.ACCESS_WIFI_STATE,
-                    // Manifest.permission.CHANGE_WIFI_STATE
-            };
-
-            ArrayList<String> toApplyList = new ArrayList<String>();
-
-            for (String perm : permissions) {
-                if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context, perm)) {
-                    toApplyList.add(perm);
-                    // 进入到这里代表没有权限.
-                }
-            }
-            if (!toApplyList.isEmpty()) {
-                errorMessage = "缺少权限：" + toApplyList;
-                fixMessage = "请从AndroidManifest.xml复制相关权限";
-            }
-        }
-    }
+//    private static class PermissionCheck extends Check {
+//        private Context context;
+//
+//        public PermissionCheck(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        public void check() {
+//            String[] permissions = {
+//                    Manifest.permission.INTERNET,
+//                    Manifest.permission.ACCESS_NETWORK_STATE,
+//                    Manifest.permission.MODIFY_AUDIO_SETTINGS,
+//                    // Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                    // Manifest.permission.WRITE_SETTINGS,
+//                    Manifest.permission.READ_PHONE_STATE,
+//                    Manifest.permission.ACCESS_WIFI_STATE,
+//                    // Manifest.permission.CHANGE_WIFI_STATE
+//            };
+//
+//            ArrayList<String> toApplyList = new ArrayList<String>();
+//
+//            for (String perm : permissions) {
+//                if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context, perm)) {
+//                    toApplyList.add(perm);
+//                    // 进入到这里代表没有权限.
+//                }
+//            }
+//            if (!toApplyList.isEmpty()) {
+//                errorMessage = "缺少权限：" + toApplyList;
+//                fixMessage = "请从AndroidManifest.xml复制相关权限";
+//            }
+//        }
+//    }
 
     private static class JniCheck extends Check {
         private Context context;

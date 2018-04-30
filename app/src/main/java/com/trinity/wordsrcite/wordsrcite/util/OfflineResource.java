@@ -38,7 +38,7 @@ public class OfflineResource {
     public OfflineResource(Context context, String voiceType) throws IOException {
         context = context.getApplicationContext();
         this.assets = context.getApplicationContext().getAssets();
-        this.destPath = FileUtil.createTmpDir(context);
+        this.destPath = FileUtil.createTmpDir(context,"baiduTTS");
         setOfflineVoiceType(voiceType);
     }
 

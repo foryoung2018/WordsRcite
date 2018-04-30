@@ -27,7 +27,7 @@ public class SaveFileActivity extends SynthActivity {
      * FileSaveListener 在UiMessageListener的基础上，使用 onSynthesizeDataArrived回调，获取音频流
      */
     protected void initialTts() {
-        String tmpDir = FileUtil.createTmpDir(this);
+        String tmpDir = FileUtil.createTmpDir(this,"baiduTTS");
         // 设置初始化参数
         // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
         SpeechSynthesizerListener listener = new FileSaveListener(mainHandler, tmpDir);

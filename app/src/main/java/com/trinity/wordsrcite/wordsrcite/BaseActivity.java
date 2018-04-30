@@ -1,6 +1,7 @@
 package com.trinity.wordsrcite.wordsrcite;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
  * 此类 底层UI实现 无SDK相关逻辑
  */
 
-public class BaseActivity extends AppCompatActivity implements MainHandlerConstant {
+public class BaseActivity extends Activity implements MainHandlerConstant {
     protected Button mSpeak;
     protected Button mPause;
     protected Button mResume;

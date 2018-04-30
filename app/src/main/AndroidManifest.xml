@@ -17,7 +17,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
         <activity
@@ -35,6 +34,9 @@
         <activity
             android:name="com.trinity.wordsrcite.wordsrcite.ManuActivity"
             android:label="离在线语音合成" />
+        <activity
+            android:name="com.trinity.wordsrcite.wordsrcite.WordActivity"
+            android:label="单词表" />
         <activity
             android:name="com.trinity.wordsrcite.wordsrcite.MiniActivity"
             android:label="精简版合成" />

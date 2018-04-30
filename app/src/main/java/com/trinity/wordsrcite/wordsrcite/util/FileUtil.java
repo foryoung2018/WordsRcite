@@ -16,8 +16,8 @@ import java.io.InputStream;
 public class FileUtil {
 
     // 创建一个临时目录，用于复制临时文件，如assets目录下的离线资源文件
-    public static String createTmpDir(Context context) {
-        String sampleDir = "baiduTTS";
+    public static String createTmpDir(Context context,String sampleDir) {
+//        String sampleDir = "baiduTTS";
         String tmpDir = Environment.getExternalStorageDirectory().toString() + "/" + sampleDir;
         if (!FileUtil.makeDir(tmpDir)) {
             tmpDir = context.getExternalFilesDir(sampleDir).getAbsolutePath();

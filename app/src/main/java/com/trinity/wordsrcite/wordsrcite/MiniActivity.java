@@ -1,6 +1,7 @@
 package com.trinity.wordsrcite.wordsrcite;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -36,7 +37,7 @@ import java.util.Map;
  * Created by fujiayi on 2017/9/14.
  */
 
-public class MiniActivity extends AppCompatActivity {
+public class MiniActivity extends Activity {
 
     private static final String TEXT = "欢迎使用百度语音合成，请在代码中修改合成文本";
 
