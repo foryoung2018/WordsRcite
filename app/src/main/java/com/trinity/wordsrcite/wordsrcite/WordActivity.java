@@ -1,20 +1,29 @@
 package com.trinity.wordsrcite.wordsrcite;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +35,7 @@ import com.mcxtzhang.indexlib.IndexBar.widget.IndexBar;
 import com.mcxtzhang.indexlib.suspension.SuspensionDecoration;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 import com.trinity.wordsrcite.wordsrcite.Word.WordBean;
+import com.trinity.wordsrcite.wordsrcite.Worker.WorkUtil;
 import com.trinity.wordsrcite.wordsrcite.adapter.WordAdapter;
 import com.trinity.wordsrcite.wordsrcite.control.InitConfig;
 import com.trinity.wordsrcite.wordsrcite.control.MySyntherizer;
@@ -44,6 +54,7 @@ import org.xml.sax.XMLReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +99,8 @@ public class WordActivity extends AppCompatActivity  {
     protected TtsMode ttsMode = TtsMode.MIX;
     protected String offlineVoice = OfflineResource.VOICE_MALE;
 
+    private static final int TTS_OK = 1;
+
     // ===============初始化参数设置完毕，更多合成参数请至getParams()方法中设置 =================
 
     // 主控制类，所有合成控制方法从这个类开始
@@ -108,18 +121,47 @@ public class WordActivity extends AppCompatActivity  {
         setContentView(R.layout.word);
         Intent intent = getIntent();
         path = intent.getExtras().getString("file");
-        parse(path);
-        initView();
+//        WorkUtil.excute(new Runnable() {
+//            @Override
+//            public void run() {
         initialTts(); // 初始化TTS引擎
+        parse(path);
+//            }
+//        },mainHandler,TTS_OK);
+//        initDialog();
+        initView();
+        initDatas(getResources().getStringArray(R.array.provinces));
+    }
+
+    AlertDialog dialog;
+
+    private void initDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(WordActivity.this);
+        builder.setTitle("普通的对话框的标题");
+        builder.setMessage("这是一个普通的对话框的内容");
+        builder.setView(R.layout.dialog_progress);
+        dialog = builder.create();
+
+//        ((Animatable) ((ImageView) dialog.getWindow().findViewById(R.id.circular_indeterminate_progress_medium)).getDrawable()).start();
+        dialog.show();
     }
 
     Handler mainHandler = new Handler() {
-        /*
-         * @param msg
-         */
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            switch (msg.what){
+                case TTS_OK:
+                    this.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+//                            dialog.dismiss();
+                        }
+                    },500);
+
+                    break;
+            }
         }
 
     };
@@ -133,26 +175,8 @@ public class WordActivity extends AppCompatActivity  {
 
             Map<String, String> params = getParams();
 
-
             // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
             InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
-
-            // 如果您集成中出错，请将下面一段代码放在和demo中相同的位置，并复制InitConfig 和 AutoCheck到您的项目中
-            // 上线时请删除AutoCheck的调用
-            AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what == 100) {
-                        AutoCheck autoCheck = (AutoCheck) msg.obj;
-                        synchronized (autoCheck) {
-                            String message = autoCheck.obtainDebugMessage();
-//                            toPrint(message); // 可以用下面一行替代，在logcat中查看代码
-                            // Log.w("AutoCheckMessage", message);
-                        }
-                    }
-                }
-
-            });
             synthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
         }
     }
@@ -206,7 +230,7 @@ public class WordActivity extends AppCompatActivity  {
         mRv.setLayoutManager(mManager = new LinearLayoutManager(this));
 
 
-        mAdapter = new SwipeDelMenuAdapter(this, mDatas);
+        mAdapter = new SwipeDelMenuAdapter(this, words);
         mRv.setAdapter(mAdapter);
         mRv.addItemDecoration(mDecoration = new SuspensionDecoration(this, mDatas));
         //如果add两个，那么按照先后顺序，依次渲染。
@@ -218,8 +242,6 @@ public class WordActivity extends AppCompatActivity  {
         mTvSideBarHint = (TextView) findViewById(R.id.tvSideBarHint);//HintTextView
         mIndexBar = (IndexBar) findViewById(R.id.indexBar);//IndexBar
 
-        //模拟线上加载数据
-        initDatas(getResources().getStringArray(R.array.provinces));
     }
 
     /**
@@ -229,33 +251,27 @@ public class WordActivity extends AppCompatActivity  {
      * @return
      */
     private void initDatas(final String[] data) {
-        //延迟两秒 模拟加载数据中....
-        getWindow().getDecorView().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDatas = new ArrayList<>();
-                //微信的头部 也是可以右侧IndexBar导航索引的，
-                // 但是它不需要被ItemDecoration设一个标题titile
-                mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-                mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-                mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-                mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-                for (int i = 0; i < data.length; i++) {
-                    WordBean cityBean = new WordBean();
-                    cityBean.setWord(data[i]);//设置城市名称
-                    mDatas.add(cityBean);
-                }
-                mAdapter.setDatas(words);
-                mAdapter.notifyDataSetChanged();
+        mDatas = new ArrayList<>();
+        //微信的头部 也是可以右侧IndexBar导航索引的，
+        // 但是它不需要被ItemDecoration设一个标题titile
+        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
+        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
+        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
+        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
+        for (int i = 0; i < data.length; i++) {
+            WordBean cityBean = new WordBean();
+            cityBean.setWord(data[i]);//设置城市名称
+            mDatas.add(cityBean);
+        }
+        mAdapter.setDatas(words);
+        mAdapter.notifyDataSetChanged();
 
-                mIndexBar.setmPressedShowTextView(mTvSideBarHint)//设置HintTextView
-                        .setNeedRealIndex(true)//设置需要真实的索引
-                        .setmLayoutManager(mManager)//设置RecyclerView的LayoutManager
-                        .setmSourceDatas(words)//设置数据
-                        .invalidate();
-                mDecoration.setmDatas(words);
-            }
-        }, 2000);
+        mIndexBar.setmPressedShowTextView(mTvSideBarHint)//设置HintTextView
+                .setNeedRealIndex(true)//设置需要真实的索引
+                .setmLayoutManager(mManager)//设置RecyclerView的LayoutManager
+                .setmSourceDatas(words)//设置数据
+                .invalidate();
+        mDecoration.setmDatas(words);
     }
 
     private void parse(String file) {
@@ -322,10 +338,44 @@ public class WordActivity extends AppCompatActivity  {
     }
 
     public void speak(View view){
-            // 合成前可以修改参数：
-            // Map<String, String> params = getParams();
-            // synthesizer.setParams(params);
-            int result = synthesizer.speak("百度语音，面向广大开发者永久免费开放语音合成技术。");
+        handler.postDelayed(runnable, 2000);
     }
 
+    private int i=0;
+    private Handler handler = new Handler();
+
+    private Runnable runnable = new SpeakRunnable();
+
+    class SpeakRunnable implements  Runnable{
+        @Override
+        public void run() {
+            handler.removeCallbacks(null);
+            batchSpeak(words.get(i));
+            handler.postDelayed(this, 2000);
+            i++;
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        synthesizer.release();
+        Log.i(TAG, "释放资源成功");
+        handler.removeCallbacks(null);
+        super.onDestroy();
+    }
+
+    /**
+     * 批量播放
+     */
+    private void batchSpeak(WordBean word) {
+        List<Pair<String, String>> texts = new ArrayList<Pair<String, String>>();
+        texts.add(new Pair<String, String>(word.getWord(), "a0"));
+        texts.add(new Pair<String, String>(word.getChinese(), "a1"));
+//        texts.add(new Pair<String, String>(word.getTranslate(), "a2"));
+        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
+        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
+        texts.add(new Pair<String, String>(word.getWord(), "a0"));
+        int result = synthesizer.batchSpeak(texts);
+    }
 }
