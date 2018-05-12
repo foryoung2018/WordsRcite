@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme"
         >
         <activity
-            android:name=".MainActivity"
+            android:name=".ManuActivity"
             android:label="@string/app_name"
 
             >
@@ -31,11 +31,14 @@
             </intent-filter>
         </activity>
 
-        <activity
+<!--        <activity
             android:name="com.trinity.wordsrcite.wordsrcite.ManuActivity"
-            android:label="离在线语音合成" />
+            android:label="离在线语音合成" />-->
         <activity
             android:name="com.trinity.wordsrcite.wordsrcite.WordActivity"
+            android:label="单词表" />
+        <activity
+            android:name="com.trinity.wordsrcite.wordsrcite.SynthActivity"
             android:label="单词表" />
         <activity
             android:name="com.trinity.wordsrcite.wordsrcite.MiniActivity"

@@ -24,11 +24,18 @@
 
         <TextView
             android:id="@+id/tvCity"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             tools:text="安徽"/>
+        <TextView
+            android:id="@+id/tvTrans"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            tools:text="含义"/>
     </LinearLayout>
 
     <Button

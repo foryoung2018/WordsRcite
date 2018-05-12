@@ -78,7 +78,7 @@ public class SynthActivity extends BaseActivity implements View.OnClickListener 
 
         initialButtons(); // 配置onclick
         initialTts(); // 初始化TTS引擎
-        ( (EditText)findViewById(R.id.input)).setText("abandon   a b a n d o m  丢弃;放弃，抛弃");
+//        ( (EditText)findViewById(R.id.input)).setText("abandon   a b a n d o m  丢弃;放弃，抛弃");
     }
 
     /**

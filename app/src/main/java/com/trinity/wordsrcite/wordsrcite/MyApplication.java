@@ -3,6 +3,8 @@ package com.trinity.wordsrcite.wordsrcite;
 import android.app.Application;
 import android.content.Context;
 
+import com.trinity.wordsrcite.wordsrcite.Worker.WorkUtil;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -17,6 +19,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         msApp = new WeakReference<MyApplication>(this);
+        WorkUtil.init();
     }
 
     public static Context getGlobalContext() {

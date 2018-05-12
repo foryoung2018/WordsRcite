@@ -49,6 +49,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
     public void onBindViewHolder(final WordAdapter.ViewHolder holder, final int position) {
         final WordBean wordBean = mDatas.get(position);
         holder.tvCity.setText(wordBean.getWord());
+        holder.tvTrans.setText(wordBean.getTranslate());
         holder.content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +66,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvCity;
+        TextView tvTrans;
         ImageView avatar;
         View content;
 
@@ -72,6 +74,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
             super(itemView);
             tvCity = (TextView) itemView.findViewById(R.id.tvCity);
             avatar = (ImageView) itemView.findViewById(R.id.ivAvatar);
+            tvTrans = (TextView) itemView.findViewById(R.id.tvTrans);
             content = itemView.findViewById(R.id.content);
         }
     }

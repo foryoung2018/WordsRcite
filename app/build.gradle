@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.trinity.wordsrcite.wordsrcite"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -14,10 +14,15 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+ext {
+    butterKnifeVersion = '8.8.1'
 }
 
 dependencies {
@@ -35,4 +40,7 @@ dependencies {
     //    implementation 'com.race604.flyrefresh:library:2.0.0'
     implementation project(path: ':indexlib')
     implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.2.2'
+
+    implementation "com.jakewharton:butterknife:${butterKnifeVersion}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
 }
