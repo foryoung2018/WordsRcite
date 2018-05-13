@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.trinity.wordsrcite.wordsrcite.WordActivity;
+
 /**
  * 在 MessageListener的基础上，和UI配合。
  * Created by fujiayi on 2017/9/14.
@@ -62,7 +64,12 @@ public class UiMessageListener extends MessageListener {
             Message msg = Message.obtain();
             msg.what = action;
             msg.obj = message + "\n";
+            if(message.contains("播放结束回调")&&message.contains("a4")){
+                msg.what= WordActivity.WORD_FINISH;
+            }
             mainHandler.sendMessage(msg);
+
+
             Log.i(TAG, message);
         }
     }

@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
+import com.baidu.tts.client.SpeechError;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
@@ -67,6 +68,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class WordActivity extends AppCompatActivity  {
 
+    public static final int WORD_FINISH = 1111 ;
     private ArrayList<String> data;
     private ArrayList<String> xml;
     private String path;
@@ -104,8 +106,8 @@ public class WordActivity extends AppCompatActivity  {
     // ===============初始化参数设置完毕，更多合成参数请至getParams()方法中设置 =================
 
     // 主控制类，所有合成控制方法从这个类开始
-    protected MySyntherizer synthesizer;
 
+    protected MySyntherizer synthesizer;
     protected static String DESC = "请先看完说明。之后点击“合成并播放”按钮即可正常测试。\n"
             + "测试离线合成功能需要首次联网。\n"
             + "纯在线请修改代码里ttsMode为TtsMode.ONLINE， 没有纯离线。\n"
@@ -131,7 +133,10 @@ public class WordActivity extends AppCompatActivity  {
 //        initDialog();
         initView();
         initDatas(getResources().getStringArray(R.array.provinces));
+
+
     }
+
 
     AlertDialog dialog;
 
@@ -150,7 +155,9 @@ public class WordActivity extends AppCompatActivity  {
     Handler mainHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+
             super.handleMessage(msg);
+            Log.i(TAG,"msg.what = " + msg.what);
             switch (msg.what){
                 case TTS_OK:
                     this.postDelayed(new Runnable() {
@@ -159,7 +166,8 @@ public class WordActivity extends AppCompatActivity  {
 //                            dialog.dismiss();
                         }
                     },500);
-
+                    break;
+                case WORD_FINISH:
                     break;
             }
         }
@@ -167,7 +175,6 @@ public class WordActivity extends AppCompatActivity  {
     };
 
     private void initialTts() {
-        {
             LoggerProxy.printable(true); // 日志打印在logcat中
             // 设置初始化参数
             // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
@@ -178,7 +185,6 @@ public class WordActivity extends AppCompatActivity  {
             // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
             InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
             synthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
-        }
     }
 
     /**
@@ -350,11 +356,13 @@ public class WordActivity extends AppCompatActivity  {
         @Override
         public void run() {
             handler.removeCallbacks(null);
+            mManager.scrollToPositionWithOffset(i, 60);
             batchSpeak(words.get(i));
-            handler.postDelayed(this, 2000);
+//            handler.postDelayed(this, 2000);
             i++;
         }
     }
+
 
 
     @Override
@@ -371,11 +379,52 @@ public class WordActivity extends AppCompatActivity  {
     private void batchSpeak(WordBean word) {
         List<Pair<String, String>> texts = new ArrayList<Pair<String, String>>();
         texts.add(new Pair<String, String>(word.getWord(), "a0"));
-        texts.add(new Pair<String, String>(word.getChinese(), "a1"));
+//        texts.add(new Pair<String, String>(word.getChinese(), "a1"));
 //        texts.add(new Pair<String, String>(word.getTranslate(), "a2"));
-        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
-        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
-        texts.add(new Pair<String, String>(word.getWord(), "a0"));
+//        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
+//        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
+//        texts.add(new Pair<String, String>(word.getWord(), "a4"));
         int result = synthesizer.batchSpeak(texts);
+
+
+    }
+
+
+    class Lisenter implements SpeechSynthesizerListener{
+
+        @Override
+        public void onSynthesizeStart(String s) {
+
+        }
+
+        @Override
+        public void onSynthesizeDataArrived(String s, byte[] bytes, int i) {
+
+        }
+
+        @Override
+        public void onSynthesizeFinish(String s) {
+
+        }
+
+        @Override
+        public void onSpeechStart(String s) {
+
+        }
+
+        @Override
+        public void onSpeechProgressChanged(String s, int i) {
+
+        }
+
+        @Override
+        public void onSpeechFinish(String s) {
+
+        }
+
+        @Override
+        public void onError(String s, SpeechError speechError) {
+
+        }
     }
 }
