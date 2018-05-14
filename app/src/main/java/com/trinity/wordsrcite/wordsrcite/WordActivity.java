@@ -168,6 +168,7 @@ public class WordActivity extends AppCompatActivity  {
                     },500);
                     break;
                 case WORD_FINISH:
+                    speakBegin();
                     break;
             }
         }
@@ -175,16 +176,16 @@ public class WordActivity extends AppCompatActivity  {
     };
 
     private void initialTts() {
-            LoggerProxy.printable(true); // 日志打印在logcat中
-            // 设置初始化参数
-            // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
-            SpeechSynthesizerListener listener = new UiMessageListener(mainHandler);
+        LoggerProxy.printable(true); // 日志打印在logcat中
+        // 设置初始化参数
+        // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
+        SpeechSynthesizerListener listener = new UiMessageListener(mainHandler);
 
-            Map<String, String> params = getParams();
+        Map<String, String> params = getParams();
 
-            // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
-            InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
-            synthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
+        // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
+        InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
+        synthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
     }
 
     /**
@@ -344,32 +345,23 @@ public class WordActivity extends AppCompatActivity  {
     }
 
     public void speak(View view){
-        handler.postDelayed(runnable, 2000);
+        speakBegin();
+    }
+
+    private void speakBegin(){
+        batchSpeak(words.get(i));
+        mManager.scrollToPositionWithOffset(i, 60);
+        i++;
     }
 
     private int i=0;
-    private Handler handler = new Handler();
-
-    private Runnable runnable = new SpeakRunnable();
-
-    class SpeakRunnable implements  Runnable{
-        @Override
-        public void run() {
-            handler.removeCallbacks(null);
-            mManager.scrollToPositionWithOffset(i, 60);
-            batchSpeak(words.get(i));
-//            handler.postDelayed(this, 2000);
-            i++;
-        }
-    }
-
 
 
     @Override
     protected void onDestroy() {
         synthesizer.release();
         Log.i(TAG, "释放资源成功");
-        handler.removeCallbacks(null);
+        mainHandler.removeCallbacks(null);
         super.onDestroy();
     }
 
@@ -379,14 +371,12 @@ public class WordActivity extends AppCompatActivity  {
     private void batchSpeak(WordBean word) {
         List<Pair<String, String>> texts = new ArrayList<Pair<String, String>>();
         texts.add(new Pair<String, String>(word.getWord(), "a0"));
-//        texts.add(new Pair<String, String>(word.getChinese(), "a1"));
-//        texts.add(new Pair<String, String>(word.getTranslate(), "a2"));
-//        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
-//        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
-//        texts.add(new Pair<String, String>(word.getWord(), "a4"));
+        texts.add(new Pair<String, String>(word.getChinese(), "a1"));
+        texts.add(new Pair<String, String>(word.getTranslate(), "a2"));
+        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
+        texts.add(new Pair<String, String>(word.getLetters().toString(), "a3"));
+        texts.add(new Pair<String, String>(word.getWord(), "a4"));
         int result = synthesizer.batchSpeak(texts);
-
-
     }
 
 
