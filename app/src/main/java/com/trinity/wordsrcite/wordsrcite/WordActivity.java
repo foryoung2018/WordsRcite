@@ -35,6 +35,7 @@ import com.baidu.tts.client.TtsMode;
 import com.mcxtzhang.indexlib.IndexBar.widget.IndexBar;
 import com.mcxtzhang.indexlib.suspension.SuspensionDecoration;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
+import com.trinity.wordsrcite.wordsrcite.Word.Word;
 import com.trinity.wordsrcite.wordsrcite.Word.WordBean;
 import com.trinity.wordsrcite.wordsrcite.Worker.WorkUtil;
 import com.trinity.wordsrcite.wordsrcite.adapter.WordAdapter;
@@ -46,6 +47,7 @@ import com.trinity.wordsrcite.wordsrcite.listener.UiMessageListener;
 import com.trinity.wordsrcite.wordsrcite.util.AutoCheck;
 import com.trinity.wordsrcite.wordsrcite.util.FileUtil;
 import com.trinity.wordsrcite.wordsrcite.util.OfflineResource;
+import com.trinity.wordsrcite.wordsrcite.util.ToastUtil;
 import com.trinity.wordsrcite.wordsrcite.util.XmlUtils;
 
 import org.xml.sax.InputSource;
@@ -64,6 +66,10 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 
 public class WordActivity extends AppCompatActivity  {
@@ -133,8 +139,24 @@ public class WordActivity extends AppCompatActivity  {
 //        initDialog();
         initView();
         initDatas(getResources().getStringArray(R.array.provinces));
+        Realm.init(this);
+        Realm realm = Realm.getDefaultInstance();
 
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override public void execute(Realm realm) {
+                // Add a person
+                Word w = realm.createObject(Word.class);
+                w.setWord("111") ;
+                w.setTranslate("22");
+                w.setPhonetic("111");
+            }
+        });
 
+        // Build the query looking at all users:
+        RealmQuery<Word> query = realm.where(Word.class);
+        RealmResults<Word> result1 = query.findAll();
+        String word = result1.get(0).getWord();
+        Toast.makeText(this,word,Toast.LENGTH_SHORT).show();
     }
 
 
@@ -160,15 +182,15 @@ public class WordActivity extends AppCompatActivity  {
             Log.i(TAG,"msg.what = " + msg.what);
             switch (msg.what){
                 case TTS_OK:
+                    break;
+
+                case WORD_FINISH:
                     this.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-//                            dialog.dismiss();
+                            speakBegin();
                         }
-                    },500);
-                    break;
-                case WORD_FINISH:
-                    speakBegin();
+                    },3000);
                     break;
             }
         }

@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.trinity.wordsrcite.wordsrcite.Item;
+import com.trinity.wordsrcite.wordsrcite.Word.Word;
 import com.trinity.wordsrcite.wordsrcite.Word.WordBean;
 
 import org.w3c.dom.Document;
@@ -25,6 +26,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import io.realm.Realm;
 
 import static android.content.ContentValues.TAG;
 
@@ -60,6 +63,7 @@ public class XmlUtils {
         private String tempString;
         private String tag = null;
         private StringBuilder sb;
+
 
         private boolean flag = false;
 
