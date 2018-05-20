@@ -1,7 +1,9 @@
 package com.trinity.wordsrcite.wordsrcite.util;
 
+import android.content.Context;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.Toast;
 
 import com.trinity.wordsrcite.wordsrcite.Item;
 import com.trinity.wordsrcite.wordsrcite.Word.Word;
@@ -28,6 +30,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
 
@@ -43,17 +47,17 @@ public class XmlUtils {
     /**
      * SAX是一个解析速度快并且占用内存少的xml解析器，SAX解析XML文件采用的是事件驱动，它并不需要解析完整个文档，而是按内容顺序解析文档的过程
      */
-    public List<WordBean> sax2xml(InputStream is) throws Exception {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        //初始化Sax解析器
-        SAXParser sp = spf.newSAXParser();
-        //新建解析处理器
-        MyHandler handler = new MyHandler();
-        //将解析交给处理器
-        sp.parse(is, handler);
-        //返回List
-        return handler.getList();
-    }
+//    public List<WordBean> sax2xml(InputStream is) throws Exception {
+//        SAXParserFactory spf = SAXParserFactory.newInstance();
+//        //初始化Sax解析器
+//        SAXParser sp = spf.newSAXParser();
+//        //新建解析处理器
+//        MyHandler handler = new MyHandler();
+//        //将解析交给处理器
+//        sp.parse(is, handler);
+//        //返回List
+//        return handler.getList();
+//    }
 
     public class MyHandler extends DefaultHandler {
 
@@ -66,6 +70,25 @@ public class XmlUtils {
 
 
         private boolean flag = false;
+        private Context context;
+        private Realm realm;
+
+        public MyHandler(Context context) {
+            this.context = context;
+            Realm .init(context);
+            realm = Realm.getDefaultInstance();
+
+
+
+        }
+
+
+
+        // Build the query looking at all users:
+//        RealmQuery<Word> query = realm.where(Word.class);
+//        RealmResults<Word> result1 = query.findAll();
+//        String word = result1.get(0).getWord();
+//        Toast.makeText(this,word,Toast.LENGTH_SHORT).show();
 
         /**
          * 解析到文档开始调用，一般做初始化操作
@@ -140,6 +163,10 @@ public class XmlUtils {
                 item.setPhonetic(s);
             }
             tag = null;
+
+
+
+
 
         }
 

@@ -139,24 +139,29 @@ public class WordActivity extends AppCompatActivity  {
 //        initDialog();
         initView();
         initDatas(getResources().getStringArray(R.array.provinces));
-        Realm.init(this);
-        Realm realm = Realm.getDefaultInstance();
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override public void execute(Realm realm) {
-                // Add a person
-                Word w = realm.createObject(Word.class);
-                w.setWord("111") ;
-                w.setTranslate("22");
-                w.setPhonetic("111");
-            }
-        });
 
-        // Build the query looking at all users:
-        RealmQuery<Word> query = realm.where(Word.class);
-        RealmResults<Word> result1 = query.findAll();
-        String word = result1.get(0).getWord();
-        Toast.makeText(this,word,Toast.LENGTH_SHORT).show();
+
+//         Build the query looking at all users:
+
+//        String word = result1.get(0).getWord();
+//        Toast.makeText(this,word,Toast.LENGTH_SHORT).show();
+        //TODO 异步处理
+        Realm .init(this);
+            final Realm realm = Realm.getDefaultInstance();
+                for(final WordBean b : words) {
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override public void execute(Realm realm) {
+                            // Add a person
+                            Word w = realm.createObject(Word.class);
+                            w.setWord(b.getWord()) ;
+                            w.setTranslate(b.getTranslate());
+                            w.setPhonetic(b.getPhonetic());
+                        }
+                    });
+                }
+                RealmQuery<Word> query = realm.where(Word.class);
+                RealmResults<Word> result1 = query.findAll();
     }
 
 
@@ -313,7 +318,7 @@ public class WordActivity extends AppCompatActivity  {
             XMLReader reader = parser.getXMLReader();
             // 为reader对象注册事件处理接口
             XmlUtils util = new XmlUtils();
-            XmlUtils.MyHandler handler = util.new MyHandler();
+            XmlUtils.MyHandler handler = util.new MyHandler(this);
             reader.setContentHandler(handler);
             // 解析指定XML字符串对象
             InputStream is = new FileInputStream(file);
