@@ -1,6 +1,7 @@
 package com.trinity.wordsrcite.wordsrcite;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -140,28 +141,65 @@ public class WordActivity extends AppCompatActivity  {
         initView();
         initDatas(getResources().getStringArray(R.array.provinces));
 
-
+        showDialog();
 
 //         Build the query looking at all users:
 
 //        String word = result1.get(0).getWord();
 //        Toast.makeText(this,word,Toast.LENGTH_SHORT).show();
         //TODO 异步处理
-        Realm .init(this);
-            final Realm realm = Realm.getDefaultInstance();
-                for(final WordBean b : words) {
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override public void execute(Realm realm) {
-                            // Add a person
-                            Word w = realm.createObject(Word.class);
-                            w.setWord(b.getWord()) ;
-                            w.setTranslate(b.getTranslate());
-                            w.setPhonetic(b.getPhonetic());
-                        }
-                    });
-                }
-                RealmQuery<Word> query = realm.where(Word.class);
-                RealmResults<Word> result1 = query.findAll();
+//        Realm .init(this);
+//            final Realm realm = Realm.getDefaultInstance();
+//                for(final WordBean b : words) {
+//                    realm.executeTransaction(new Realm.Transaction() {
+//                        @Override public void execute(Realm realm) {
+//                            // Add a person
+//                            Word w = realm.createObject(Word.class);
+//                            w.setWord(b.getWord()) ;
+//                            w.setTranslate(b.getTranslate());
+//                            w.setPhonetic(b.getPhonetic());
+//                        }
+//                    });
+//                }
+//                RealmQuery<Word> query = realm.where(Word.class);
+//                RealmResults<Word> result1 = query.findAll();
+    }
+
+
+    public void showDialog(){
+        final ProgressDialog dialog = new ProgressDialog(this);
+        // 设置对话框参数
+        dialog.setIcon(R.mipmap.ic_launcher);
+        dialog.setTitle("生成单词表");
+        dialog.setMessage("生成进度：");
+        dialog.setCancelable(false);
+        // 设置进度条参数
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setMax(100);
+        dialog.setProgress(30);
+        dialog.incrementProgressBy(20);
+        dialog.setIndeterminate(false); // 填false表示是明确显示进度的 填true表示不是明确显示进度的
+//        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                Toast.makeText(WordActivity.this , "确定" , Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                Toast.makeText(WordActivity.this , "取消" , Toast.LENGTH_SHORT).show();
+//            }
+//        });
+        dialog.show();
+
+        mainHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+            }
+        },2000);
     }
 
 
