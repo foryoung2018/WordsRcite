@@ -2,9 +2,11 @@ package com.trinity.wordsrcite.wordsrcite;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ import com.baidu.tts.client.TtsMode;
 import com.mcxtzhang.indexlib.IndexBar.widget.IndexBar;
 import com.mcxtzhang.indexlib.suspension.SuspensionDecoration;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
+import com.trinity.wordsrcite.wordsrcite.Service.WordParseService;
 import com.trinity.wordsrcite.wordsrcite.Word.Word;
 import com.trinity.wordsrcite.wordsrcite.Word.WordBean;
 import com.trinity.wordsrcite.wordsrcite.Worker.WorkUtil;
@@ -48,6 +51,7 @@ import com.trinity.wordsrcite.wordsrcite.listener.UiMessageListener;
 import com.trinity.wordsrcite.wordsrcite.util.AutoCheck;
 import com.trinity.wordsrcite.wordsrcite.util.FileUtil;
 import com.trinity.wordsrcite.wordsrcite.util.OfflineResource;
+import com.trinity.wordsrcite.wordsrcite.util.SharedPreferencesUtils;
 import com.trinity.wordsrcite.wordsrcite.util.ToastUtil;
 import com.trinity.wordsrcite.wordsrcite.util.XmlUtils;
 
@@ -64,20 +68,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+
+import static com.trinity.wordsrcite.wordsrcite.Service.WordParseService.PARSE_OK;
 
 
 public class WordActivity extends AppCompatActivity  {
 
     public static final int WORD_FINISH = 1111 ;
-    private ArrayList<String> data;
-    private ArrayList<String> xml;
     private String path;
     private static final String TAG =  WordActivity.class.getSimpleName();
     private List<WordBean> words;
@@ -89,7 +89,7 @@ public class WordActivity extends AppCompatActivity  {
     private List<WordBean> mDatas = new ArrayList<>();
 
     private SuspensionDecoration mDecoration;
-
+    ProgressDialog dialog;
     /**
      * 右侧边栏导航区域
      */
@@ -130,48 +130,31 @@ public class WordActivity extends AppCompatActivity  {
         setContentView(R.layout.word);
         Intent intent = getIntent();
         path = intent.getExtras().getString("file");
-//        WorkUtil.excute(new Runnable() {
-//            @Override
-//            public void run() {
         initialTts(); // 初始化TTS引擎
-        parse(path);
-//            }
-//        },mainHandler,TTS_OK);
-//        initDialog();
         initView();
-        initDatas(getResources().getStringArray(R.array.provinces));
-
-        showDialog();
-
-//         Build the query looking at all users:
-
-//        String word = result1.get(0).getWord();
-//        Toast.makeText(this,word,Toast.LENGTH_SHORT).show();
-        //TODO 异步处理
-//        Realm .init(this);
-//            final Realm realm = Realm.getDefaultInstance();
-//                for(final WordBean b : words) {
-//                    realm.executeTransaction(new Realm.Transaction() {
-//                        @Override public void execute(Realm realm) {
-//                            // Add a person
-//                            Word w = realm.createObject(Word.class);
-//                            w.setWord(b.getWord()) ;
-//                            w.setTranslate(b.getTranslate());
-//                            w.setPhonetic(b.getPhonetic());
-//                        }
-//                    });
-//                }
-//                RealmQuery<Word> query = realm.where(Word.class);
-//                RealmResults<Word> result1 = query.findAll();
+        initDatas();
+        if(!(boolean) SharedPreferencesUtils.getParam(this, Constants.INIT_WORD_LIST,true)){
+            showDialog();
+            startService(new Intent(this, WordParseService.class).putExtra("xml_path",path));
+        }else{
+            Realm.init(this);
+            Realm realm = Realm.getDefaultInstance();
+            RealmQuery<Word> query = realm.where(Word.class);
+            RealmResults<Word> result1 = query.findAll();
+//            words = realm.copyFromRealm(result1);
+            //TODO word 转成 wordbean  显示
+            Log.i(TAG,"*** "+result1.toString());
+        }
+        registerReceiver();
     }
 
 
     public void showDialog(){
-        final ProgressDialog dialog = new ProgressDialog(this);
+         dialog = new ProgressDialog(this);
         // 设置对话框参数
         dialog.setIcon(R.mipmap.ic_launcher);
         dialog.setTitle("生成单词表");
-        dialog.setMessage("生成进度：");
+//        dialog.setMessage("生成进度：");
         dialog.setCancelable(false);
         // 设置进度条参数
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -179,41 +162,6 @@ public class WordActivity extends AppCompatActivity  {
         dialog.setProgress(30);
         dialog.incrementProgressBy(20);
         dialog.setIndeterminate(false); // 填false表示是明确显示进度的 填true表示不是明确显示进度的
-//        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                Toast.makeText(WordActivity.this , "确定" , Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                Toast.makeText(WordActivity.this , "取消" , Toast.LENGTH_SHORT).show();
-//            }
-//        });
-        dialog.show();
-
-        mainHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                dialog.dismiss();
-            }
-        },2000);
-    }
-
-
-    AlertDialog dialog;
-
-    private void initDialog() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(WordActivity.this);
-        builder.setTitle("普通的对话框的标题");
-        builder.setMessage("这是一个普通的对话框的内容");
-        builder.setView(R.layout.dialog_progress);
-        dialog = builder.create();
-
-//        ((Animatable) ((ImageView) dialog.getWindow().findViewById(R.id.circular_indeterminate_progress_medium)).getDrawable()).start();
         dialog.show();
     }
 
@@ -300,41 +248,21 @@ public class WordActivity extends AppCompatActivity  {
     private void initView() {
         mRv = (RecyclerView) findViewById(R.id.list);
         mRv.setLayoutManager(mManager = new LinearLayoutManager(this));
-
-
         mAdapter = new SwipeDelMenuAdapter(this, words);
         mRv.setAdapter(mAdapter);
         mRv.addItemDecoration(mDecoration = new SuspensionDecoration(this, mDatas));
         //如果add两个，那么按照先后顺序，依次渲染。
         //mRv.addItemDecoration(new TitleItemDecoration2(this,mDatas));
         mRv.addItemDecoration(new DividerItemDecoration(WordActivity.this, DividerItemDecoration.VERTICAL_LIST));
-
-
         //使用indexBar
         mTvSideBarHint = (TextView) findViewById(R.id.tvSideBarHint);//HintTextView
         mIndexBar = (IndexBar) findViewById(R.id.indexBar);//IndexBar
-
     }
 
-    /**
-     * 组织数据源
-     *
-     * @param data
-     * @return
-     */
-    private void initDatas(final String[] data) {
+    private void initDatas() {
         mDatas = new ArrayList<>();
         //微信的头部 也是可以右侧IndexBar导航索引的，
         // 但是它不需要被ItemDecoration设一个标题titile
-        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-        mDatas.add((WordBean) new WordBean("新的朋友").setBaseIndexTag(INDEX_STRING_TOP));
-        for (int i = 0; i < data.length; i++) {
-            WordBean cityBean = new WordBean();
-            cityBean.setWord(data[i]);//设置城市名称
-            mDatas.add(cityBean);
-        }
         mAdapter.setDatas(words);
         mAdapter.notifyDataSetChanged();
 
@@ -346,32 +274,6 @@ public class WordActivity extends AppCompatActivity  {
         mDecoration.setmDatas(words);
     }
 
-    private void parse(String file) {
-        try {
-            // 创建一个工厂对象
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            // 通过工厂对象得到一个解析器对象
-            SAXParser parser = factory.newSAXParser();
-            // 通过parser得到XMLReader对象
-            XMLReader reader = parser.getXMLReader();
-            // 为reader对象注册事件处理接口
-            XmlUtils util = new XmlUtils();
-            XmlUtils.MyHandler handler = util.new MyHandler(this);
-            reader.setContentHandler(handler);
-            // 解析指定XML字符串对象
-            InputStream is = new FileInputStream(file);
-            InputSource source = new InputSource(is);
-            reader.parse(source);
-            words = handler.getList();
-            Log.i(TAG,words.toString());
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 和CityAdapter 一模一样，只是修改了 Item的布局
@@ -444,42 +346,27 @@ public class WordActivity extends AppCompatActivity  {
         int result = synthesizer.batchSpeak(texts);
     }
 
-
-    class Lisenter implements SpeechSynthesizerListener{
-
+    private BroadcastReceiver parseReceiver = new BroadcastReceiver()
+    {
         @Override
-        public void onSynthesizeStart(String s) {
-
+        public void onReceive(Context context, Intent intent)
+        {
+            if (intent.getAction() == PARSE_OK)
+            {
+                words = (List<WordBean>) intent.getSerializableExtra(WordParseService.WORD_LIST);
+                initView();
+                initDatas();
+                dialog.dismiss();
+            }
         }
+    };
 
-        @Override
-        public void onSynthesizeDataArrived(String s, byte[] bytes, int i) {
 
-        }
-
-        @Override
-        public void onSynthesizeFinish(String s) {
-
-        }
-
-        @Override
-        public void onSpeechStart(String s) {
-
-        }
-
-        @Override
-        public void onSpeechProgressChanged(String s, int i) {
-
-        }
-
-        @Override
-        public void onSpeechFinish(String s) {
-
-        }
-
-        @Override
-        public void onError(String s, SpeechError speechError) {
-
-        }
+    private void registerReceiver()
+    {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PARSE_OK);
+        registerReceiver(parseReceiver, filter);
     }
+
 }

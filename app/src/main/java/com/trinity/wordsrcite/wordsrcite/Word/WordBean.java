@@ -2,10 +2,11 @@ package com.trinity.wordsrcite.wordsrcite.Word;
 
 import com.mcxtzhang.indexlib.IndexBar.bean.BaseIndexPinyinBean;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class WordBean extends BaseIndexPinyinBean {
+public class WordBean extends BaseIndexPinyinBean implements Serializable {
     private String word;
     private String translate;
     private String phonetic ;

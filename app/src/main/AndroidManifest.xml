@@ -46,6 +46,8 @@
         <activity
             android:name="com.trinity.wordsrcite.wordsrcite.SaveFileActivity"
             android:label="保存合成后的音频" />
+        <service
+            android:name="com.trinity.wordsrcite.wordsrcite.Service.WordParseService"/>
     </application>
 
 </manifest>
