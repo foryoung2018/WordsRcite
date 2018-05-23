@@ -79,6 +79,7 @@ public class WordActivity extends AppCompatActivity  {
 
     public static final int WORD_FINISH = 1111 ;
     private String path;
+    private String file;
     private static final String TAG =  WordActivity.class.getSimpleName();
     private List<WordBean> words;
 
@@ -129,23 +130,38 @@ public class WordActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.word);
         Intent intent = getIntent();
-        path = intent.getExtras().getString("file");
+        path = intent.getExtras().getString("path");
+        file = intent.getExtras().getString("file");
         initialTts(); // 初始化TTS引擎
         initView();
         initDatas();
-        if(!(boolean) SharedPreferencesUtils.getParam(this, Constants.INIT_WORD_LIST,true)){
+        if(!(boolean) SharedPreferencesUtils.getParam(this, file,false)){
             showDialog();
-            startService(new Intent(this, WordParseService.class).putExtra("xml_path",path));
+            Intent serviceIntent = new Intent(this, WordParseService.class);
+            serviceIntent.putExtra("xml_path",path);
+            serviceIntent.putExtra("xml_file",file);
+            startService(serviceIntent);
+            registerReceiver();
         }else{
             Realm.init(this);
             Realm realm = Realm.getDefaultInstance();
             RealmQuery<Word> query = realm.where(Word.class);
             RealmResults<Word> result1 = query.findAll();
-//            words = realm.copyFromRealm(result1);
-            //TODO word 转成 wordbean  显示
+            List<Word> ret= realm.copyFromRealm(result1);
+            transform(ret);
             Log.i(TAG,"*** "+result1.toString());
+            initView();
+            initDatas();
         }
-        registerReceiver();
+
+    }
+
+    private void transform(List<Word> ret) {
+        words  = new ArrayList<>();
+        for(Word w: ret){
+            WordBean bean = new WordBean(w);
+            words.add(bean);
+        }
     }
 
 

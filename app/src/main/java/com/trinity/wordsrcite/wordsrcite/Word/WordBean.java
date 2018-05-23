@@ -6,12 +6,30 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import io.realm.RealmModel;
+
 public class WordBean extends BaseIndexPinyinBean implements Serializable {
     private String word;
     private String translate;
     private String phonetic ;
     private String chinese;
     private List<String> letters;
+    private String fileName;
+
+    public WordBean(Word w) {
+        setTranslate(w.getTranslate());
+        setWord(w.getWord());
+        setPhonetic(w.getPhonetic()) ;
+        setFileName(w.getFileName());
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public WordBean(String word, String translate, String phonetic) {
         this.word = word;

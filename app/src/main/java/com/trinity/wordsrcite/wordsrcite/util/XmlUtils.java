@@ -72,6 +72,7 @@ public class XmlUtils {
         private boolean flag = false;
         private Context context;
         private Realm realm;
+        private String attr;
 
         public MyHandler(Context context) {
             this.context = context;
@@ -162,11 +163,9 @@ public class XmlUtils {
             }else if("phonetic".equals(tag)){
                 item.setPhonetic(s);
             }
+
+            item.setFileName(attr);
             tag = null;
-
-
-
-
 
         }
 
@@ -194,6 +193,10 @@ public class XmlUtils {
          */
         public List<WordBean> getList() {
             return list;
+        }
+
+        public void setAttr(String attr) {
+            this.attr = attr;
         }
     }
 

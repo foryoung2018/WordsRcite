@@ -61,13 +61,14 @@ public class WordParseService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         String path = intent.getStringExtra("xml_path");
-        parse(path);
+        String file = intent.getStringExtra("xml_file");
+        parse(path,file);
         realm();
-        writeSP();
+        writeSP(file);
     }
 
-    private void writeSP() {
-        SharedPreferencesUtils.setParam(this, Constants.INIT_WORD_LIST,true);
+    private void writeSP(String file) {
+        SharedPreferencesUtils.setParam(this, file,true);
     }
 
     //写入数据库
@@ -82,6 +83,7 @@ public class WordParseService extends IntentService {
                     w.setWord(b.getWord()) ;
                     w.setTranslate(b.getTranslate());
                     w.setPhonetic(b.getPhonetic());
+                    w.setFileName(b.getFileName());
                 }
             });
         }
@@ -97,7 +99,7 @@ public class WordParseService extends IntentService {
         sendBroadcast(intent);
     }
 
-    private void parse(String file) {
+    private void parse(String path,String file) {
         try {
             // 创建一个工厂对象
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -108,9 +110,10 @@ public class WordParseService extends IntentService {
             // 为reader对象注册事件处理接口
             XmlUtils util = new XmlUtils();
             XmlUtils.MyHandler handler = util.new MyHandler(this);
+            handler.setAttr(file);
             reader.setContentHandler(handler);
             // 解析指定XML字符串对象
-            InputStream is = new FileInputStream(file);
+            InputStream is = new FileInputStream(path);
             InputSource source = new InputSource(is);
             reader.parse(source);
             words = handler.getList();

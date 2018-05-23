@@ -11,7 +11,17 @@ public class Word extends RealmObject {
     private String translate;
     private String phonetic ;
     private String chinese;
-//    private List<String> letters;
+    private String fileName;
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    //    private List<String> letters;
 
     public Word(String word, String translate, String phonetic) {
         this.word = word;

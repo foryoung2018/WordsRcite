@@ -1,118 +1,66 @@
 package com.trinity.wordsrcite.wordsrcite;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 
 import com.trinity.wordsrcite.wordsrcite.util.FileUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static android.content.ContentValues.TAG;
 
-public class ManuActivity extends AppCompatActivity  {
+public class HomeFragment extends Fragment {
+
 
     private ArrayList<String> data;
     private ArrayList<String> xml;
     private ArrayList<String> file;
+    private View view;
 
     private RecyclerView mRecyclerView = null;
 
-    private DataAdapter mDataAdapter = null;
-
-
-    private static final String SD_PATH = "/sdcard/hdzuoye/pic/";
-    private static final String IN_PATH = "/hdzuoye/pic/";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.manu);
-        getXmlList();
-        copyFileList();
-        initView();
-
-    }
-
+    private HomeFragment.DataAdapter mDataAdapter = null;
 
     private static HashMap<String, Boolean> mapInitied = new HashMap<String, Boolean>();
 
-    private void copyFileList() {
-        xml = new ArrayList<String>();
-        file = new ArrayList<String>();
-        String path =FileUtil.createTmpDir(this,"WordBook");
-
-        for (String s : data){
-            String destFilename = path + "/" + s;
-
-            boolean recover = false;
-            Boolean existed = mapInitied.get(s); // 启动时完全覆盖一次
-            if (existed == null || !existed) {
-                recover = true;
-            }
-            try{
-                FileUtil.copyFromAssets(this.getAssets(), s, destFilename, recover);
-            }catch (Exception e){
-
-            }
-            xml.add(destFilename);
-            file.add(s);
-        }
-
-    Log.i(TAG,"xml ="+xml );
+    public HomeFragment() {
+        // Required empty public constructor
     }
 
-    private void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mDataAdapter = new DataAdapter(this);
-        mDataAdapter.setData(data);
-        mRecyclerView.setAdapter(mDataAdapter);
+    //单例模式
+    public static HomeFragment newInstance(){
+        HomeFragment homeFragment=new HomeFragment();
+        return homeFragment;
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.manu, container, false);
+        getXmlList();
+        copyFileList();
+        initView();
+        return view;
     }
 
     public List<String> getXmlList() {
 
-        AssetManager assetManager = this.getAssets();
+        AssetManager assetManager = getActivity().getAssets();
         String[] files = null;
         try {
             files = assetManager.list("");
@@ -128,6 +76,40 @@ public class ManuActivity extends AppCompatActivity  {
             }
         }
         return data;
+    }
+
+    private void copyFileList() {
+        xml = new ArrayList<String>();
+        file = new ArrayList<String>();
+        String path = FileUtil.createTmpDir(getActivity(),"WordBook");
+
+        for (String s : data){
+            String destFilename = path + "/" + s;
+
+            boolean recover = false;
+            Boolean existed = mapInitied.get(s); // 启动时完全覆盖一次
+            if (existed == null || !existed) {
+                recover = true;
+            }
+            try{
+                FileUtil.copyFromAssets(getActivity().getAssets(), s, destFilename, recover);
+            }catch (Exception e){
+
+            }
+            xml.add(destFilename);
+            file.add(s);
+        }
+
+        Log.i(TAG,"xml ="+xml );
+    }
+
+    private void initView() {
+        mRecyclerView = (RecyclerView)view.findViewById(R.id.list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDataAdapter = new DataAdapter(getActivity());
+        mDataAdapter.setData(data);
+        mRecyclerView.setAdapter(mDataAdapter);
+
     }
 
     private class DataAdapter extends RecyclerView.Adapter {
@@ -146,13 +128,13 @@ public class ManuActivity extends AppCompatActivity  {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(mLayoutInflater.inflate(R.layout.wordbook_item, parent, false));
+            return new DataAdapter.ViewHolder(mLayoutInflater.inflate(R.layout.wordbook_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-            ViewHolder viewHolder = (ViewHolder) holder;
+            DataAdapter.ViewHolder viewHolder = (DataAdapter.ViewHolder) holder;
             viewHolder.tv.setText(mDataList.get(position));
             Map<String,String> map = new HashMap<>();
             map.put("path",xml.get(position));
@@ -180,7 +162,7 @@ public class ManuActivity extends AppCompatActivity  {
                         Map<String,String> map = (Map<String,String>)v.getTag();
                         b.putString("path", map.get("path"));
                         b.putString("file",map.get("file"));
-                        Intent intent = new Intent(ManuActivity.this,WordActivity.class);
+                        Intent intent = new Intent(getActivity(),WordActivity.class);
                         intent.putExtras(b);
                         startActivity(intent);
                     }
