@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,60 +10,77 @@
     <FrameLayout
         android:id="@+id/mFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"></FrameLayout>
+        android:orientation="vertical"
+        android:layout_height="match_parent">
 
-    <RadioGroup
-        android:layout_marginBottom="2dp"
-        android:id="@+id/mRadioGroup"
-        android:orientation="horizontal"
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/bottombar_height"
+            android:background="@drawable/actionbar_shadow_up" />
+
+    </FrameLayout>
+
+    <com.trinity.wordsrcite.wordsrcite.view.BottomBar
+        android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
-        <RadioButton
-            android:button="@null"
-            android:checked="true"
-            android:drawableTop="@drawable/word_rb"
-            android:textColor="#ff3333"
-            android:id="@+id/mRb_home"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:text="Home"
-            android:layout_weight="1"
-            android:layout_height="match_parent" />
+        android:layout_alignParentBottom="true"
+        android:layout_height="@dimen/bottombar_height" />
 
-        <RadioButton
-            android:button="@null"
-            android:drawableTop="@drawable/word_rb_s"
-            android:textColor="#ff3333"
-            android:id="@+id/mRb_message"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:text="Message"
-            android:layout_weight="1"
-            android:layout_height="match_parent" />
+    <!--<RadioGroup-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:paddingTop="5dp"-->
+        <!--android:id="@+id/mRadioGroup"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_height="48dp">-->
+        <!--<RadioButton-->
+            <!--android:button="@null"-->
+            <!--android:checked="true"-->
+            <!--android:drawableTop="@drawable/word_rb"-->
+            <!--android:textColor="#ff3333"-->
+            <!--android:id="@+id/mRb_home"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:text="Home"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="match_parent" />-->
 
-        <RadioButton
-            android:button="@null"
-            android:drawableTop="@drawable/word_rb_s"
-            android:textColor="#ff3333"
-            android:id="@+id/mRb_find"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:text="Find"
-            android:layout_weight="1"
-            android:layout_height="match_parent" />
+        <!--<RadioButton-->
+            <!--android:button="@null"-->
+            <!--android:drawableTop="@drawable/word_rb_s"-->
+            <!--android:textColor="#ff3333"-->
+            <!--android:id="@+id/mRb_message"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:text="Message"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="match_parent" />-->
 
-        <RadioButton
-            android:button="@null"
-            android:drawableTop="@drawable/word_rb_s"
-            android:textColor="#ff3333"
-            android:id="@+id/mRb_my"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:text="My"
-            android:layout_weight="1"
-            android:layout_height="match_parent" />
+        <!--<RadioButton-->
+            <!--android:button="@null"-->
+            <!--android:drawableTop="@drawable/word_rb_s"-->
+            <!--android:textColor="#ff3333"-->
+            <!--android:id="@+id/mRb_find"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:text="Find"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="match_parent" />-->
 
-    </RadioGroup>
+        <!--<RadioButton-->
+            <!--android:button="@null"-->
+            <!--android:drawableTop="@drawable/word_rb_s"-->
+            <!--android:textColor="#ff3333"-->
+            <!--android:id="@+id/mRb_my"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:text="My"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="match_parent" />-->
 
-</LinearLayout>
+    <!--</RadioGroup>-->
+
+</RelativeLayout>
