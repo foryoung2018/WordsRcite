@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -16,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 
 import com.trinity.wordsrcite.wordsrcite.R;
@@ -64,13 +68,21 @@ public class POperationDialog<T> extends AlertDialog {
 
     private void initView() {
         m_viewPager = (ViewPager) findViewById(R.id.pager);
+//        btCancel.setLayoutParams(param);
         adapter = new OperatePagerAdapter(views);
+        m_viewPager.setOffscreenPageLimit(3);
+        m_viewPager.setPageMargin(10);
+        DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+        int screenHeight = dm.heightPixels;
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                screenWidth * 3/4, screenHeight*3/5);
+        m_viewPager.setLayoutParams(params);
         m_viewPager.setAdapter(adapter);
-        m_viewPager.setPageTransformer(true, new ScrollOffsetTransformer());
+//        m_viewPager.setPageTransformer(true, new ScrollOffsetTransformer());
         m_viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -88,7 +100,6 @@ public class POperationDialog<T> extends AlertDialog {
 
     class OperatePagerAdapter extends PagerAdapter {
         private List<View> mList;
-        private List<ViewGroup> views;
 
         public OperatePagerAdapter(List<View> mList) {
             this.mList = mList;
@@ -101,13 +112,13 @@ public class POperationDialog<T> extends AlertDialog {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(mList.get(position));
+            container.addView(mList.get(position),0);
             return mList.get(position);
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-//            container.removeView(mList.get(position));
+            container.removeView(mList.get(position));
         }
 
         @Override
@@ -118,17 +129,11 @@ public class POperationDialog<T> extends AlertDialog {
     }
 
     public static class ScrollOffsetTransformer implements ViewPager.PageTransformer {
+        private static final float MIN_SCALE = 1f;
+        //主要是设置在不同位置上的VIEW的活动动画
         @Override
-        public void transformPage(View page, float position) {
-            Log.i("yang","position" + position);
-//            if (position == 1) {
-//                右侧的缓存页往左偏移100
-//                page.setTranslationX(-180 * position);
-//            }
+        public void transformPage(View view, float position) {
 
-//            else{
-//                page.setTranslationX(150 * position);
-//            }
         }
     }
 

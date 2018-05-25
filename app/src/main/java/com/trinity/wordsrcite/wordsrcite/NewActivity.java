@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.trinity.wordsrcite.wordsrcite.dialog.POperationDialog;
+import com.trinity.wordsrcite.wordsrcite.fragment.TranslateFragment;
 import com.trinity.wordsrcite.wordsrcite.view.BottomBar;
 import com.trinity.wordsrcite.wordsrcite.view.BottomBarTab;
 
@@ -39,6 +41,7 @@ public class NewActivity extends AppCompatActivity
         //添加默认布局
         normalFragment();
         initBottom();
+
     }
 
 
@@ -74,15 +77,11 @@ public class NewActivity extends AppCompatActivity
         }
     }
 
-
-
-
-
     private void initBottom() {
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
 
-        mBottomBar.addItem(new BottomBarTab(this, R.drawable.ic_home_white_24dp))
-                .addItem(new BottomBarTab(this, R.drawable.ic_discover_white_24dp))
+        mBottomBar.addItem(new BottomBarTab(this, R.drawable.word_rb))
+                .addItem(new BottomBarTab(this, R.drawable.translate))
                 .addItem(new BottomBarTab(this, R.drawable.ic_message_white_24dp))
                 .addItem(new BottomBarTab(this, R.drawable.ic_account_circle_white_24dp));
 
@@ -101,7 +100,7 @@ public class NewActivity extends AppCompatActivity
 
     public List<Fragment> getFragments() {
         fragments.add(new HomeFragment());
-        fragments.add(new HomeFragment());
+        fragments.add(new TranslateFragment());
         fragments.add(new HomeFragment());
         fragments.add(new HomeFragment());
         return fragments;

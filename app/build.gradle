@@ -39,11 +39,13 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //    compile 'de.greenrobot:greendao:2.1.0'
-    //    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     //    implementation 'com.race604.flyrefresh:library:2.0.0'
     api project(path: ':indexlib')
     api 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.2.2'
-
+    api 'com.squareup.retrofit2:converter-gson:2.0.2' // 用Gson解析json的转换器
     api "com.jakewharton:butterknife:${butterKnifeVersion}"
+    api 'com.squareup.retrofit2:retrofit:2.0.2'
 //    annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
 }

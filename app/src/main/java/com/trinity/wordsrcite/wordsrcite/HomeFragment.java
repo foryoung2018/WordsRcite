@@ -13,6 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.trinity.wordsrcite.wordsrcite.request.GetRequest_Interface;
+import com.trinity.wordsrcite.wordsrcite.request.PostRequest_Interface;
+import com.trinity.wordsrcite.wordsrcite.request.Translation;
+import com.trinity.wordsrcite.wordsrcite.request.Translation1;
 import com.trinity.wordsrcite.wordsrcite.util.FileUtil;
 
 import java.io.IOException;
@@ -20,6 +24,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.content.ContentValues.TAG;
 
@@ -55,8 +65,11 @@ public class HomeFragment extends Fragment {
         getXmlList();
         copyFileList();
         initView();
+
         return view;
     }
+
+
 
     public List<String> getXmlList() {
 
