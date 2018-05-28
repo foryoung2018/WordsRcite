@@ -7,6 +7,16 @@ import java.util.List;
  */
 public class Translation1 {
 
+    @Override
+    public String toString() {
+        return "Translation1{" +
+                "type='" + type + '\'' +
+                ", errorCode=" + errorCode +
+                ", elapsedTime=" + elapsedTime +
+                ", translateResult=" + translateResult +
+                '}';
+    }
+
     private String type;
     private int errorCode;
     private int elapsedTime;
@@ -45,10 +55,20 @@ public class Translation1 {
     }
 
     public static class TranslateResultBean {
+        @Override
+        public String toString() {
+            return "TranslateResultBean{" +
+                    "src='" + src + '\'' +
+                    ", tgt='" + tgt + '\'' +
+                    '}';
+        }
+
         /**
          * src : merry me
          * tgt : 我快乐
          */
+
+
 
         public String src;
         public String tgt;

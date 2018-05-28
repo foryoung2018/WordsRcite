@@ -40,11 +40,12 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/dp_10">
+        >
 
         <EditText
             android:id="@+id/add_content"
             android:layout_width="fill_parent"
+            android:padding="@dimen/dp_10"
             android:layout_height="wrap_content"
             android:background="@android:drawable/edit_text"
             android:enabled="true"
@@ -55,9 +56,16 @@
             android:scrollbars="vertical"></EditText>
     </ScrollView>
 
+    <TextView
+        android:id="@+id/tv_show"
+        android:minLines="4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="..." />
+
     <Button
         android:id="@+id/button2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="翻译" />
 </LinearLayout>

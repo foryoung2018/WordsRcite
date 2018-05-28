@@ -20,10 +20,10 @@ public class MyApplication extends Application {
     private static MyApplication msApp;
 
     public static Context getGlobalContext() {
-        return INSTANCE;
+        return instance;
     }
 
-    private static MyApplication INSTANCE;
+    private static MyApplication instance;
     /**
      * 任务栈
      */
@@ -33,13 +33,15 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        INSTANCE = this;
+        instance = this;
 
     }
 
-    public static MyApplication getInstance() {
-        return INSTANCE;
+    // 获取ApplicationContext
+    public static Context getContext() {
+        return instance;
     }
+
 
     /**
      * 添加一个Activity
