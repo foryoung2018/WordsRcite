@@ -22,7 +22,7 @@
 ### ---2018/5/29
 加入有道翻译接口
 加入HttpLoggingInterceptor  RxAndroid
-````
+```
 OkHttpClient client = new OkHttpClient();
 HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 logging.setLevel(Level.BASIC);
