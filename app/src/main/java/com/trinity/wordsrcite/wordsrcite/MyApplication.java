@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+import com.alibaba.android.arouter.launcher.ARouter;
+import com.antfortune.freeline.FreelineCore;
 import com.trinity.wordsrcite.wordsrcite.Worker.WorkUtil;
 
 import java.lang.ref.WeakReference;
@@ -34,6 +36,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        FreelineCore.init(this);
+        ARouter.init(instance);
 
     }
 

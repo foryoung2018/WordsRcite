@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.alibaba.android.arouter.launcher.ARouter;
+import com.example.basecommonlibrary.RouterCommonUtil;
 import com.trinity.wordsrcite.wordsrcite.dialog.POperationDialog;
 import com.trinity.wordsrcite.wordsrcite.fragment.TranslateFragment;
 import com.trinity.wordsrcite.wordsrcite.view.BottomBar;
@@ -46,10 +48,10 @@ public class NewActivity extends AppCompatActivity
 
 
 
-    public static class Listener implements  BottomBar.OnTabSelectedListener{
+    public class Listener implements  BottomBar.OnTabSelectedListener{
         private final FragmentManager fm;
         private NewActivity context;
-        private static FragmentTransaction transaction;
+        private  FragmentTransaction transaction;
 
         public Listener(NewActivity newActivity) {
             context = newActivity;
@@ -59,8 +61,15 @@ public class NewActivity extends AppCompatActivity
 
         @Override
         public void onTabSelected(int position, int prePosition) {
+            if(position==2){
+                start();
+            }
+
             Log.i("11","onTabSelected :position  " + position +"prePosition" + position );
             Fragment fragment=fragments.get(position);
+            if(position==3){
+                fragment = (Fragment) ARouter.getInstance().build( "/com/TestFragment" ).navigation();
+            }
             transaction=fm.beginTransaction();
             transaction.replace(R.id.mFragment,fragment);
             transaction.commit();
@@ -77,12 +86,16 @@ public class NewActivity extends AppCompatActivity
         }
     }
 
+    private void start(){
+        RouterCommonUtil.startLibraryOneActivity(this);
+    }
+
     private void initBottom() {
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
 
         mBottomBar.addItem(new BottomBarTab(this, R.drawable.word_rb))
                 .addItem(new BottomBarTab(this, R.drawable.translate))
-                .addItem(new BottomBarTab(this, R.drawable.ic_message_white_24dp))
+                .addItem(new BottomBarTab(this, R.drawable.video))
                 .addItem(new BottomBarTab(this, R.drawable.ic_account_circle_white_24dp));
 
         mBottomBar.setOnTabSelectedListener(new Listener(this));

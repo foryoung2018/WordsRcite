@@ -3,7 +3,6 @@ package com.trinity.wordsrcite.wordsrcite.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +12,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.orhanobut.logger.Logger;
-import com.trinity.wordsrcite.wordsrcite.BuildConfig;
 import com.trinity.wordsrcite.wordsrcite.MyApplication;
 import com.trinity.wordsrcite.wordsrcite.R;
 import com.trinity.wordsrcite.wordsrcite.request.GetRequest_Interface;
-import com.trinity.wordsrcite.wordsrcite.request.LoggingInterceptor;
 import com.trinity.wordsrcite.wordsrcite.request.Request_interface;
 import com.trinity.wordsrcite.wordsrcite.request.Translation;
 import com.trinity.wordsrcite.wordsrcite.request.Translation1;
@@ -55,7 +53,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class TranslateFragment extends Fragment {
+@Route(path = "/com/TestFragment")
+public class TranslateFragment1 extends Fragment {
 
     private View view;
     @BindView(R.id.tv_f)
@@ -87,7 +86,7 @@ public class TranslateFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         getRequest();
         initOkHttpClient();
-        Log.i("yang","t0");
+        Log.i("yang","t3");
         return view;
     }
 

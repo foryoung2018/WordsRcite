@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'com.antfortune.freeline'
 
 android {
     compileSdkVersion 25
@@ -12,6 +13,13 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
+
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ moduleName : project.getName() ]
+            }
+        }
     }
     buildTypes {
         release {
@@ -63,6 +71,13 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.orhanobut:logger:2.1.1'
 
+    debugCompile 'com.antfortune.freeline:runtime:0.8.8'
+    releaseCompile 'com.antfortune.freeline:runtime-no-op:0.8.8'
+    testCompile 'com.antfortune.freeline:runtime-no-op:0.8.8'
 
+    compile 'com.alibaba:arouter-api:1.2.1.1'
+    annotationProcessor 'com.alibaba:arouter-compiler:1.1.2.1'
 
+    compile project(':basecommonlibrary')
+    compile project(':libraryvideo')
 }
