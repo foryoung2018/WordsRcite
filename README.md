@@ -59,7 +59,7 @@ HttpLoggingIntercetptor logging = new HttpLoggingInterceptor(new Logger() {
 });
 ```
 
-//TODO插件化，待加入
+//TODO组件化，待加入
 
 --------------------------------------------------------------------------------
 
