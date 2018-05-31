@@ -1,0 +1,108 @@
+{
+    "project_type": "gradle",
+    "android_gradle_plugin_version": "3.0.0",
+    "freeline_gradle_plugin_version": "0.8.8",
+    "java_home": "C:\\Program Files\\Java\\jdk1.8.0_91",
+    "freeline_cache_dir": "D:\\huyangTrunk\\WordsRcite",
+    "auto_dependency": true,
+    "product_flavor": "",
+    "build_script": "gradlew.bat :app:assembleDebug",
+    "build_script_work_directory": "",
+    "root_dir": "D:\\huyangTrunk\\WordsRcite",
+    "main_project_name": "app",
+    "main_project_dir": "app",
+    "build_directory": "D:\\huyangTrunk\\WordsRcite\\app\\build",
+    "build_cache_dir": "D:\\huyangTrunk\\WordsRcite\\app\\build\\freeline",
+    "build_tools_version": "27.0.3",
+    "sdk_directory": "C:\\Users\\foryoung\\AppData\\Local\\Android\\Sdk",
+    "build_tools_directory": "C:\\Users\\foryoung\\AppData\\Local\\Android\\Sdk\\build-tools\\27.0.3",
+    "compile_sdk_version": "android-25",
+    "compile_sdk_directory": "C:\\Users\\foryoung\\AppData\\Local\\Android\\Sdk\\platforms\\android-25",
+    "package": "com.trinity.wordsrcite.wordsrcite",
+    "debug_package": "com.trinity.wordsrcite.wordsrcite",
+    "main_manifest_path": "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\AndroidManifest.xml",
+    "launcher": "com.trinity.wordsrcite.wordsrcite.NewActivity",
+    "apk_path": "D:\\huyangTrunk\\WordsRcite\\app\\build\\outputs\\apk\\app-debug.apk",
+    "extra_dep_res_paths": [
+        
+    ],
+    "exclude_dep_res_paths": [
+        
+    ],
+    "main_r_path": "D:\\huyangTrunk\\WordsRcite\\app\\build\\generated\\source\\r\\debug\\R.java",
+    "use_jdk8": true,
+    "ignore_resource_ids": [
+        "avd_hide_password_1",
+        "avd_hide_password_2",
+        "avd_hide_password_3",
+        "avd_show_password_1",
+        "avd_show_password_2",
+        "avd_show_password_3"
+    ],
+    "use_system_gradle": false,
+    "check_sources_md5": [
+        
+    ],
+    "main_src_directory": [
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\java",
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\java"
+    ],
+    "main_res_directory": [
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\res",
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\res"
+    ],
+    "main_assets_directory": [
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\assets",
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\assets"
+    ],
+    "main_jni_directory": [
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\jni",
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\jni"
+    ],
+    "main_jniLibs_directory": [
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\jniLibs",
+        "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\jniLibs"
+    ],
+    "project_source_sets": {
+        "app": {
+            "main_src_directory": [
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\java",
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\java"
+            ],
+            "main_res_directory": [
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\res",
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\res"
+            ],
+            "main_assets_directory": [
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\assets",
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\assets"
+            ],
+            "main_jni_directory": [
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\jni",
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\jni"
+            ],
+            "main_jniLibs_directory": [
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\debug\\jniLibs",
+                "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\jniLibs"
+            ],
+            "main_manifest_path": "D:\\huyangTrunk\\WordsRcite\\app\\src\\main\\AndroidManifest.xml"
+        }
+    },
+    "modules": [
+        {
+            "name": "app",
+            "path": "D:\\huyangTrunk\\WordsRcite\\app"
+        }
+    ],
+    "module_dependencies": {
+        "app": [
+            
+        ]
+    },
+    "databinding": [
+        
+    ],
+    "databinding_modules": [
+        
+    ]
+}

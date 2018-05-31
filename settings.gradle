@@ -1,1 +1,1 @@
-include ':app', ':indexlib',':basecommonlibrary',':libraryvideo'
+include ':app', ':indexlib',':basecommonlibrary',':libraryvideo',':sample',':player-java', ':player-armv7a', ':player-x86', ':player-armv5', ':player-arm64'

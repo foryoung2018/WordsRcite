@@ -36,6 +36,8 @@ ext {
     butterKnifeVersion = '8.8.1'
 }
 
+
+
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     //    implementation 'com.android.support:appcompat-v7:22.1.1'
@@ -79,5 +81,9 @@ dependencies {
     annotationProcessor 'com.alibaba:arouter-compiler:1.1.2.1'
 
     compile project(':basecommonlibrary')
-    compile project(':libraryvideo')
+
+    if (!isNeedVideoModule.toBoolean()) {
+        compile project(':libraryvideo')
+    }
 }
+

@@ -9,7 +9,15 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/basecommonlibrary" />
             <option value="$PROJECT_DIR$/indexlib" />
+            <option value="$PROJECT_DIR$/libraryvideo" />
+            <option value="$PROJECT_DIR$/player-arm64" />
+            <option value="$PROJECT_DIR$/player-armv5" />
+            <option value="$PROJECT_DIR$/player-armv7a" />
+            <option value="$PROJECT_DIR$/player-java" />
+            <option value="$PROJECT_DIR$/player-x86" />
+            <option value="$PROJECT_DIR$/sample" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
