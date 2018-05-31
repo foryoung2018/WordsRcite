@@ -66,3 +66,7 @@ HttpLoggingIntercetptor logging = new HttpLoggingInterceptor(new Logger() {
 ### ---2018/5/30
 
 //TODO  video 音视频
+
+### ---2018/50/31
+
+//TODO C 编解码
