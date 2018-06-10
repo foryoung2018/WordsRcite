@@ -16,7 +16,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.apt_annotation.AttachView;
 
+@AttachView
 public class FileListActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ListView fileListView;
@@ -28,7 +30,7 @@ public class FileListActivity extends ActionBarActivity implements LoaderManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
-
+        InjectActivity.inject(this);//调用build生成的类
         fileListView = (ListView) findViewById(R.id.fileListView);
         adapter = new VideoAdapter(this);
         fileListView.setAdapter(adapter);

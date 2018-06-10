@@ -67,6 +67,18 @@ HttpLoggingIntercetptor logging = new HttpLoggingInterceptor(new Logger() {
 
 //TODO  video 音视频
 
-### ---2018/50/31
+### ---2018/5/31
 
 //TODO C 编解码
+
+### ---2018/6/11
+加入APT
+>AOP(一)  
+APT
+https://blog.csdn.net/trinity2015/article/details/80646582
+@AttachView 注解 inject调用 toast方法
+
+
+libraryone 调试 dialog
+
+//TODO 音视频

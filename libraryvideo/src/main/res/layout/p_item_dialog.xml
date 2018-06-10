@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="您的金币不足，无法解锁。请先去赚取足量的金币吧～"
+        android:gravity="center"
+        android:lineSpacingExtra="10px"
+        android:textColor="@color/color_6" />
+
+    <TextView
+        android:id="@+id/tv_gold_coin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/icon_coin_big"
+        android:drawablePadding="10px"
+        android:text="105"
+        android:textColor="@color/color_6" />
+
+</LinearLayout>

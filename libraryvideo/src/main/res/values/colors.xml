@@ -3,4 +3,137 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="color_4A4A4A">#4A4A4A</color>
+    <color name="color_535353">#535353</color>
+    <color name="color_E72D36">#E72D36</color>
+    <color name="color_ffd555">#ffd555</color>
+    <color name="color_947A02">#947A02</color>
+    <color name="color_FFFAEF">#FFFAEF</color>
+    <color name="color_FE615E">#FE615E</color>
+    <color name="color_FF666666">#FF666666</color>
+    <color name="color_63B8FF">#63B8FF</color>
+    <color name="color_3DB7FC">#3DB7FC</color>
+    <color name="FF37C5F">#FF37C5FB</color>
+    <color name="color_E71515">#E71515</color>
+    <color name="color_37C5FB">#37C5FB</color>
+    <color name="color_FF999999">#FF999999</color>
+    <color name="primary">#3C515C</color>
+    <color name="accent">#40C4FF</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="yellow">#FFFFCC</color>
+
+    <color name="text_enabled">#EE4545</color>
+    <color name="text_disabled">#000000</color>
+
+    <color name="color_3C000000">#3C000000</color>
+
+    <drawable name="white">#ffffff</drawable>
+    <drawable name="eeeeee">#eeeeee</drawable>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="gray">#eeeeee</color>
+    <color name="none_color">#00000000</color>
+    <color name="alpha_gray">#b3111111</color>
+    <color name="color_6">#666666</color>
+    <color name="color_9">#999999</color>
+    <color name="color_e7">#E7E7E7</color>
+    <color name="color_3">#333333</color>
+    <color name="color_c">#cccccc</color>
+    <color name="color_white_90">#E6ffffff</color>
+    <color name="color_f4f4">#f4f4f4</color>
+    <color name="black">#000000</color>
+    <color name="select_province_line">#c7c7c7</color>
+    <color name="context_bg">#f7f7f7</color>
+    <color name="color_white">#ffffff</color>
+    <color name="add_book_out_2">#717171</color>
+    <color name="title_tx_color">#333333</color>
+    <color name="color_cb">#cbcbcb</color>
+    <color name="color_e1">#e1e1e1</color>
+    <color name="color_c_60">#99cccccc</color>
+
+    <color name="line_color">#E8E8E8</color>
+    <color name="transparant">#00000000</color>
+    <color name="red_color">#e20829</color>
+
+    <color name="text_color_main">#666666</color>
+    <color name="text_color_main_content">#333333</color>
+    <color name="text_color_gray">#999999</color>
+    <color name="text_color_6">#666666</color>
+    <color name="text_color_gray_middle">#e3e3e3</color>
+    <color name="text_red_color">#ee4545</color>
+    <color name="color_d84040">#d84040</color>
+    <color name="color_cbcbcb">#cbcbcb</color>
+
+    <color name="book_size_text_color">#666666</color>
+    <color name="bottom_tx_color">#333333</color>
+    <color name="book_name_tx_color">#333333</color>
+
+    <color name="pro_bg_bg">#e6e6e6</color>
+    <color name="pro_bg_p">#ee4848</color>
+    <color name="text_line">#E9E9E9</color>
+    <color name="text_ff4f">#ff4f4f</color>
+    <color name="text_0">#000000</color>
+    <color name="text_f7">#f7f7f7</color>
+    <color name="text_7f">#7f7f7f</color>
+
+
+    <color name="on_text">#FFFFFF</color><!-- 开启时文字颜色 -->
+    <color name="off_text">#5B5B5B</color><!-- 关闭时文字颜色 -->
+    <color name="truncent">#50000000</color>
+    <!--横向导航-->
+    <color name="bottom_tab_choose">#EE4949</color>
+    <color name="bottom_tab_unchoose">#aaaaaa</color>
+
+    <color name="answer_info_seting_pb_tx">#2a2d30</color>
+
+    <color name="text_color_f2">#f2f2f2</color>
+    <color name="tips_color">#99000000</color>
+    <color name="deep_tips_color">#F2000000</color>
+    <color name="color_e5">#e5e5e5</color>
+
+    <color name="school_image_item_name">#333333</color>
+    <color name="school_image_item_bg">#666666</color>
+    <color name="school_image_item_prise">#999999</color>
+    <color name="color_a">#aaaaaa</color>
+    <color name="color_yellow">#fdd15b</color>
+    <color name="color_ed">#ededed</color>
+    <color name="my_paper_list_item_bg">#fdecec</color>
+    <color name="my_paper_list_item_line">#ee4545</color>
+    <color name="login_type">#4d4d4d</color>
+    <color name="color_ff5451">#ff5451</color>
+    <color name="c_F1433F">#F1433F</color>
+    <color name="c_fed11f">#Fed11f</color>
+    <color name="c_d63B38">#D63B38</color>
+
+    <color name="color_fe5">#FFE5E5</color>
+    <color name="color_f7">#F7F7F7</color>
+    <color name="color_yellow_2">#FFD200</color>
+    <color name="red_bg">#F1433F</color>
+    <color name="color_gold">#ffea00</color>
+    <color name="color_99e3333">#993333</color>
+
+    <color name="yellow_margin">#ffe3a6</color>
+    <color name="yellow_bg">#fff0d0</color>
+    <color name="alpha_80">#CC676154</color>
+    <color name="color_676154">#676154</color>
+    <color name="alpha_50">#80aea591</color>
+    <color name="color_80ffffff">#80ffffff</color>
+    <color name="color_50ffffff">#50ffffff</color>
+    <color name="color_75ffffff">#75ffffff</color>
+    <color name="color_f5f5f5">#F5F5F5</color>
+    <color name="color_FFD555">#FFD555</color>
+    <color name="color_f2f2f2">#f2f2f2</color>
+    <color name="color_8">#888888</color>
+    <color name="color_fef0f0">#fef0f0</color>
+    <color name="color_ee4545">#ee4545</color>
+    <color name="color_ee7878">#ee7878</color>
+    <color name="color_fbc00b">#fbc00b</color>
+    <color name="color_ffc80b">#ffc80b</color>
+    <color name="dialog_black_bg">#7f000000</color>
+    <color name="dialog_alpha_bg">#00000000</color>
+    <color name="color_d8d8d8">#D8D8D8</color>
+    <color name="color_d8d8d8_60">#99D8D8D8</color>
+    <color name="color_ededed">#EDEDED</color>
+    <color name="color_EE4545">#EE4545</color>
 </resources>

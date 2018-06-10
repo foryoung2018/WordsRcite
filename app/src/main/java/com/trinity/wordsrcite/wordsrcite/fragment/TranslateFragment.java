@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -70,6 +73,8 @@ public class TranslateFragment extends Fragment {
     Button bt_translate;
     @BindView(R.id.add_content)
     EditText add_content;
+    @BindView(R.id.web)
+    WebView web;
 
     private Unbinder unbinder;
     //设缓存有效期为两天
@@ -88,6 +93,9 @@ public class TranslateFragment extends Fragment {
         getRequest();
         initOkHttpClient();
         Log.i("yang","t0");
+        web.setWebChromeClient(new WebChromeClient());
+        web.setWebViewClient(new WebViewClient());
+        web.loadUrl("www.baidu.com");
         return view;
     }
 
