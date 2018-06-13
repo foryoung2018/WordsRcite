@@ -1,7 +1,11 @@
 package com.example.libraryvideo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.opengl.EGLConfig;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +22,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.microedition.khronos.opengles.GL10;
+
 /**
  * @author: xiewenliang
  * @Filename:
@@ -27,13 +33,19 @@ import java.util.List;
  */
 @Route(path = "/libraryOne/主页", extras = CommonStation.CHECK_LOADING)
 public class ActivityOne extends AppCompatActivity implements View.OnClickListener {
+    private GLSurfaceView mGLView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.library_one_activity_main);
-        findViewById(R.id.bt1).setOnClickListener(this);
-        findViewById(R.id.bt2).setOnClickListener(this);
+//        setContentView(R.layout.library_one_activity_main);
+//        findViewById(R.id.bt1).setOnClickListener(this);
+//        findViewById(R.id.bt2).setOnClickListener(this);
 //        showOperationDialog();
+// Create a GLSurfaceView instance and set it
+        // as the ContentView for this Activity.
+        mGLView = new MyGLSurfaceView(this);
+        setContentView(mGLView);
         Toast.makeText(this,stringFromJNI(),Toast.LENGTH_LONG).show();
     }
     private void showOperationDialog(){
@@ -122,4 +134,39 @@ public class ActivityOne extends AppCompatActivity implements View.OnClickListen
     public static native int JniCppAdd(int a,int b);
     public static native int JniCppSub(int a,int b);
     public static native int FFmpegTest(String input,String output);
+
+    class MyGLSurfaceView extends GLSurfaceView {
+
+        private final MyGLRenderer mRenderer;
+
+        public MyGLSurfaceView(Context context){
+            super(context);
+
+            // Create an OpenGL ES 2.0 context
+            setEGLContextClientVersion(2);
+
+            mRenderer = new MyGLRenderer();
+
+            // Set the Renderer for drawing on the GLSurfaceView
+            setRenderer(mRenderer);
+        }
+    }
+
+    public class MyGLRenderer implements GLSurfaceView.Renderer {
+
+        public void onDrawFrame(GL10 unused) {
+            // Redraw background color
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        }
+
+        @Override
+        public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
+            // Set the background frame color
+            GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        }
+
+        public void onSurfaceChanged(GL10 unused, int width, int height) {
+            GLES20.glViewport(0, 0, width, height);
+        }
+    }
 }
