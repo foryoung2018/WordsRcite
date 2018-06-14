@@ -234,3 +234,13 @@ target_link_libraries( # Specifies the target library.
 ```
 
 //TODO https://blog.csdn.net/m0_37677536/article/details/78561085
+
+
+### ---2018/6/14
+
+加入opengles
+
+https://developer.android.com/training/graphics/opengl/projection
+
+响应点击事件
+https://developer.android.com/training/graphics/opengl/touch
