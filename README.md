@@ -250,4 +250,13 @@ https://developer.android.com/training/graphics/opengl/touch
 加入opengles opensles ffmpeg demo
 https://blog.csdn.net/m0_37677536/article/details/78775007
 
+**opengl 绘制YUV** 
+
+>步骤：
+>编写shader->编译shader->链成gpu程序（代码中的program）->分别创建yuv纹理对象->找到yuv纹理对象对应的显卡插槽（也就是要给gpu中运行的纹理对象传数据的地址）->给yuv纹理对象绑定数据->绘图。
+>shaderCode  CompileShader CreateProgram UseProgram SetupYUVTextures   SetupYUVTextures
+
+
 //TODO 显示进度条，水印，缩放，旋转等功能
+
+--------------------------------------------------------------------------------
