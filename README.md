@@ -244,3 +244,10 @@ https://developer.android.com/training/graphics/opengl/projection
 
 响应点击事件
 https://developer.android.com/training/graphics/opengl/touch
+
+### ---2018/6/15
+
+加入opengles opensles ffmpeg demo
+https://blog.csdn.net/m0_37677536/article/details/78775007
+
+//TODO 显示进度条，水印，缩放，旋转等功能

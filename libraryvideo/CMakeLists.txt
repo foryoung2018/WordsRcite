@@ -16,10 +16,19 @@ include_directories(
      ${SL_INCLUDE_DIR}                  #把头文件路径添加进来
 )
 add_library( # Sets the name of the library.
-             jni-lib                        #c/cpp代码将要编译成为so库的名称，java代码加载库文件要用这个名称
-             SHARED
-             src/main/cpp/hello-jni.cpp      #c代码文件路径
+            # jni-lib                        #c/cpp代码将要编译成为so库的名称，java代码加载库文件要用这个名称
+           #  SHARED
+
              # src/main/cpp/hello-cppjni.cpp  #cpp代码文件路径 这里可以随意添加c、c++文件
+
+             jni-lib
+                          SHARED
+                          src/main/cpp/hello-jni.cpp      #c代码文件路径
+                          src/main/cpp/FFmpeg.cpp
+                          src/main/cpp/GlView.cpp
+                          src/main/cpp/XPlayer.cpp
+                          src/main/cpp/GlUtils.cpp
+                          src/main/cpp/Opensl_io.cpp
               )
 
   add_library(
@@ -53,14 +62,11 @@ add_library( # Sets the name of the library.
               IMPORTED
               )
 
-#add_library(
-#            fdk-aac
-#            SHARED
-#            IMPORTED
-#            )
-target_link_libraries( # Specifies the target library.
-                       jni-lib
-                       )
+add_library(
+            fdk-aac
+            SHARED
+            IMPORTED
+            )
 
 set_target_properties(
 avcodec
@@ -92,11 +98,11 @@ set_target_properties(
        PROPERTIES IMPORTED_LOCATION
        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswscale.so
         )
-#   set_target_properties(
-#               fdk-aac
-#               PROPERTIES IMPORTED_LOCATION
-#               ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libfdk-aac.so
-#                )
+   set_target_properties(
+               fdk-aac
+               PROPERTIES IMPORTED_LOCATION
+              ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libfdk-aac.so
+                )
 find_library( # Sets the name of the path variable.
          log-lib
          # Specifies the name of the NDK library that
@@ -104,7 +110,7 @@ find_library( # Sets the name of the path variable.
          log )
 target_link_libraries( # Specifies the target library.
         jni-lib
-    #    fdk-aac
+        fdk-aac
         avcodec
         avfilter
         avformat

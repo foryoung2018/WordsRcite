@@ -16,13 +16,18 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ActivityOne" >
+        <activity android:name=".ActivityTwo" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--一些opengles的初步功能-->
+        <activity android:name="com.example.libraryvideo.ActivityOne" />
+        <!--ffmpeg opengles opensles音视频-->
+        <!--<activity android:name="com.example.libraryvideo.ActivityTwo" />-->
     </application>
 
     <!-- <application
