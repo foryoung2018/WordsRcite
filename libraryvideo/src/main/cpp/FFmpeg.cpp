@@ -17,7 +17,7 @@ int OpenAndInitDecoder(Decoder * decoder){
     if (ret != 0) {
         return  ret;
     } else{
-        FFLOGI("视频长度：%d",decoder->pFormatCtx->duration);
+        FFLOGI("视频长度：%ld",decoder->pFormatCtx->duration);
     }
     decoder->totleMs = (int)(decoder->pFormatCtx->duration/AV_TIME_BASE)*1000;
     avformat_find_stream_info(decoder->pFormatCtx, NULL);
@@ -63,20 +63,63 @@ int OpenAndInitDecoder(Decoder * decoder){
     decoder ->channel = CHANNEL;
     decoder ->sampleSize = SAMPLE_SIZE;
     decoder ->sampleRate = decoder->pAudioCodecCtx->sample_rate;
-   // printf("open acodec success! sampleRate:%d  channel:%d  sampleSize:%d fmt:%d\n",
-         //  decoder->sampleRate,decoder->channel,decoder->sampleSize,decoder->pAudioCodecCtx->sample_fmt);
+    // printf("open acodec success! sampleRate:%d  channel:%d  sampleSize:%d fmt:%d\n",
+    //  decoder->sampleRate,decoder->channel,decoder->sampleSize,decoder->pAudioCodecCtx->sample_fmt);
     FFLOGI("open acodec success! sampleRate:%d  channel:%d  fmt:%d\n",
            decoder->pAudioCodecCtx->sample_rate,decoder->pAudioCodecCtx->channels,decoder->pAudioCodecCtx->sample_fmt);
     return  ret;
 }
+
+static int i ;
+
+
+void SeekFrame(AVFormatContext* context, int64_t seekFrame)//跳转到指定位置
+{
+    int defaultStreamIndex = av_find_default_stream_index(context);
+//    if(ist->index == defaultStreamIndex)
+//    {
+    auto time_base = context->streams[defaultStreamIndex]->time_base;
+    auto seekTime = context->streams[defaultStreamIndex]->start_time + av_rescale(seekFrame, time_base.den, time_base.num);
+    int ret ;
+//        if(seekTime > ist->cur_dts)
+//        {
+//            ret = av_seek_frame(context, defaultStreamIndex, seekTime, AVSEEK_FLAG_ANY);
+//        }
+//        else
+//        {
+    ret = av_seek_frame(context, -1, seekTime, AVSEEK_FLAG_ANY | AVSEEK_FLAG_BACKWARD);
+//        }
+//    }
+}
+
 int  Read(Decoder * decoder){
+
 
     //这里先不加线程锁，在启动多线程的地方统一加锁
     // AVPacket * pkt = malloc(sizeof(AVPacket));
     if (!decoder->pFormatCtx) {
         return -1;
     }
+
+    int64_t time = (int64_t) (decoder->totleMs * 0.0001);
+
     int err = av_read_frame(decoder->pFormatCtx,&decoder->pkt);
+
+    //定位到这个位置1000秒
+    int64_t k = (int64_t) (1000 / av_q2d(decoder->pFormatCtx->streams[1]->time_base));
+//    SeekFrame(decoder->pFormatCtx,100);
+    if(i==100){
+        int ret =   av_seek_frame(decoder->pFormatCtx, 1 , k, AVSEEK_FLAG_BACKWARD);
+
+//    avcodec_flush_buffers(decoder->pVideoCodecCtx);
+////
+        FFLOGI("*** yang ret %d",ret);
+        FFLOGI("*** yang ret %d",k);
+        FFLOGI("*** yang i %d",i);
+    }
+    i++;
+    FFLOGI("*** yang decoder->pFormatCtx %ld",decoder->pkt.pts);
+
     if (err != 0) {
         printError("av_read_pkt_error:",err);
         if (err == -541478725){
@@ -87,6 +130,9 @@ int  Read(Decoder * decoder){
     }
     return  0;
 }
+
+
+
 int Decode(Decoder* decoder,AVPacket packet){
     if (!decoder->pFormatCtx) {
         return -1;
@@ -100,6 +146,14 @@ int Decode(Decoder* decoder,AVPacket packet){
     }
     AVCodecContext * pCodecCtx;
     AVFrame * tempFrame;
+
+
+
+
+
+
+
+
     if (packet.stream_index == decoder->videoStreamIndex) {
         pCodecCtx = decoder->pVideoCodecCtx;
         tempFrame = decoder->pYuv;
@@ -184,7 +238,7 @@ int ToPcm(Decoder * decoder,AACFrame * frame){
     if (!decoder->pFormatCtx || !decoder->pPcm) {
         return -1;
     }
-   // printf("sample_rate:%d,channels:%d,sample_fmt:%d,channel_layout:%llu,nb_samples:%d\n",pAudioCodecCtx->sample_rate,pAudioCodecCtx->channels,pAudioCodecCtx->sample_fmt,pAudioCodecCtx->channel_layout,pPcm->nb_samples);
+    // printf("sample_rate:%d,channels:%d,sample_fmt:%d,channel_layout:%llu,nb_samples:%d\n",pAudioCodecCtx->sample_rate,pAudioCodecCtx->channels,pAudioCodecCtx->sample_fmt,pAudioCodecCtx->channel_layout,pPcm->nb_samples);
     //音频重采样
     if (decoder->pSwrCtx == NULL) {
         decoder->pSwrCtx = swr_alloc();

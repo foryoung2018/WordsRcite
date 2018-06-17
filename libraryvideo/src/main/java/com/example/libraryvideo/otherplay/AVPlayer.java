@@ -1,6 +1,9 @@
 package com.example.libraryvideo.otherplay;
 
+import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.libraryvideo.surface.GlView;
@@ -32,6 +35,12 @@ public class AVPlayer {
     public void setPlayAudioOrVideoRate(int playRate){
         SetPlayAudioOrVideoRate(playRate);
     }
+
+    public void progress(final ProgressBar mProgress) {
+        mProgress.setProgress(getDuration());
+        mProgress.setMax(getTotel());
+    }
+
     public class ReadPktThread implements Runnable {
         @Override
         public void run() {
@@ -90,6 +99,12 @@ public class AVPlayer {
     public  native int ReadPkt();
     public  native int DecodeVideo();
     public  native int DecodeAudio();
+//    public  static native int seekTo();
     public  native int SetPlayRate(int playRate);
     public  native void SetPlayAudioOrVideoRate(int playRate);
+
+//    public native void seekTo(long msec) throws IllegalStateException;
+//    public native long getCurrentPosition();
+    public native int getDuration();
+    public native int getTotel();
 }

@@ -279,6 +279,16 @@ Java_com_example_libraryvideo_surface_GLRenderer_RenderOneFrame(
     pthread_mutex_unlock(&mutex_lock);
 }
 
+extern "C" JNIEXPORT jint JNICALL
+Java_com_example_libraryvideo_otherplay_AVPlayer_getDuration(
+        JNIEnv *env,
+        jobject obj)
+{
+return decoder->vFps;
+
+}
+
+
 
 
 extern "C" JNIEXPORT void JNICALL
@@ -311,3 +321,9 @@ Java_com_example_libraryvideo_otherplay_AVPlayer_ThreadTest(
 //    env->ReleaseStringChars(jtestStr,(const jchar*)test);
 }
 
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_libraryvideo_otherplay_AVPlayer_getTotel(JNIEnv *env, jobject instance) {
+
+    return decoder->totleMs;
+}

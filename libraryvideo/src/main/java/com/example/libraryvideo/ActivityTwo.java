@@ -3,15 +3,22 @@ package com.example.libraryvideo;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import com.example.libraryvideo.otherplay.AVPlayer;
 import com.example.libraryvideo.surface.GlView;
+import com.example.libraryvideo.surface.MediaController;
 
 import java.io.File;
 
@@ -39,6 +46,9 @@ public class ActivityTwo extends Activity {
     Button btnSlow;
     Button btnVTimeSlow;
     Button btnATimeSlow;
+    private ProgressBar mProgress;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +60,66 @@ public class ActivityTwo extends Activity {
         btnAccele= (Button) findViewById(R.id.btn_accelerate);
         btnATimeSlow= (Button) findViewById(R.id.btn_acce_video);
         btnVTimeSlow= (Button) findViewById(R.id.btn_acce_audio);
+        mProgress = (SeekBar) findViewById(R.id.mediacontroller_seekbar);
         AddBtnAction();
         avPlayer = new AVPlayer();
         glView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
+
+
+//    private SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
+//        public void onStartTrackingTouch(SeekBar bar) {
+//            mDragging = true;
+//            show(3600000);
+//            mHandler.removeMessages(SHOW_PROGRESS);
+//            if (mInstantSeeking)
+//                mAM.setStreamMute(AudioManager.STREAM_MUSIC, true);
+//            if (mInfoView != null) {
+//                mInfoView.setText("");
+//                mInfoView.setVisibility(View.VISIBLE);
+//            }
+//        }
+//
+//        public void onProgressChanged(SeekBar bar, int progress,
+//                                      boolean fromuser) {
+//            if (!fromuser)
+//                return;
+//
+//            final long newposition = (mDuration * progress) / 1000;
+//            String time = generateTime(newposition);
+//            if (mInstantSeeking) {
+//                mHandler.removeCallbacks(lastRunnable);
+//                lastRunnable = new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mPlayer.seekTo(newposition);
+//                    }
+//                };
+//                mHandler.postDelayed(lastRunnable, 200);
+//            }
+//            if (mInfoView != null)
+//                mInfoView.setText(time);
+//            if (mCurrentTime != null)
+//                mCurrentTime.setText(time);
+//        }
+//
+//        public void onStopTrackingTouch(SeekBar bar) {
+//            if (!mInstantSeeking)
+//                mPlayer.seekTo((mDuration * bar.getProgress()) / 1000);
+//            if (mInfoView != null) {
+//                mInfoView.setText("");
+//                mInfoView.setVisibility(View.GONE);
+//            }
+//            show(sDefaultTimeout);
+//            mHandler.removeMessages(SHOW_PROGRESS);
+//            mAM.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//            mDragging = false;
+//            mHandler.sendEmptyMessageDelayed(SHOW_PROGRESS, 1000);
+//        }
+//    };
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -83,6 +149,32 @@ public class ActivityTwo extends Activity {
                     String liveInput = new File(Environment.getExternalStorageDirectory(),"video.mp4").getAbsolutePath();
                     //  Toast.makeText(this,input,Toast.LENGTH_SHORT).show();
                     int ret =  avPlayer.OpenAVWithUrlAndView(liveInput,null,glView);
+
+                    final Handler handler=new Handler();
+
+
+                    Runnable runnable=new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            Log.i("*** yang ","duration" + avPlayer.getDuration()/1000);
+                            avPlayer.progress(mProgress);
+                            handler.postDelayed(this, 1000);
+                        }
+                    };
+
+                    Runnable runnable1=new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+//                            AVPlayer.seekTo();
+                        }
+                    };
+
+
+
+                    handler.postDelayed(runnable, 1000);
+                    handler.postDelayed(runnable1, 2000);
                 }
                 break;
             case STOP:

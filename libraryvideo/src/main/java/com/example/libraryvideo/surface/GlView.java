@@ -3,6 +3,9 @@ package com.example.libraryvideo.surface;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.view.View;
+
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -40,10 +43,14 @@ class GLRenderer implements GLSurfaceView.Renderer{
 
 public class GlView extends GLSurfaceView {
     GLRenderer renderer;
-    public GlView(Context context, AttributeSet attrs){
-        super(context,attrs);
+
+    public GlView(Context context, AttributeSet attrs) {
+        super(context, attrs);
         setEGLContextClientVersion(2);
         renderer = new GLRenderer();
         setRenderer(renderer);
     }
+
 }
+
+
