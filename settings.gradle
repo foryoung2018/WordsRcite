@@ -1,3 +1,3 @@
-include ':app', ':indexlib',':basecommonlibrary',':libraryvideo',':sample',
+include ':app', ':indexlib',':basecommonlibrary',':libraryvideo',':sample', ':libraryaspectj',
         ':player-java', ':player-armv7a', ':player-x86', ':player-armv5', ':player-arm64',
-        ':apt-annotation', ':apt-processor'
+        ':apt-annotation', ':apt-processor',"ffmpegandroidavfilter","libraryaspectj"

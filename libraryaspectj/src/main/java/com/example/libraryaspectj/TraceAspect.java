@@ -1,6 +1,8 @@
 package com.example.libraryaspectj;
 
 
+import android.util.Log;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,10 +13,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 public class TraceAspect {
 
     private static final String POINTCUT_METHOD =
-            "execution(@org.android10.gintonic.annotation.DebugTrace * *(..))";
+            "execution(@com.example.libraryaspectj.DebugTrace * *(..))";
 
     private static final String POINTCUT_CONSTRUCTOR =
-            "execution(@org.android10.gintonic.annotation.DebugTrace *.new(..))";
+            "execution(@com.example.libraryaspectj.DebugTrace *.new(..))";
 
     @Pointcut(POINTCUT_METHOD)
     public void methodAnnotatedWithDebugTrace() {}
@@ -34,7 +36,7 @@ public class TraceAspect {
         stopWatch.stop();
 
         DebugLog.log(className, buildLogMessage(methodName, stopWatch.getTotalTimeMillis()));
-
+        Log.i("*** yang",buildLogMessage(methodName, stopWatch.getTotalTimeMillis()));
         return result;
     }
 
@@ -47,7 +49,7 @@ public class TraceAspect {
      */
     private static String buildLogMessage(String methodName, long methodDuration) {
         StringBuilder message = new StringBuilder();
-        message.append("Gintonic --> ");
+        message.append("Libraryaspectj --> ");
         message.append(methodName);
         message.append(" --> ");
         message.append("[");

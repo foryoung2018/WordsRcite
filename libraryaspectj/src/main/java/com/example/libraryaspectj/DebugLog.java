@@ -12,6 +12,7 @@ public class DebugLog {
      * @param message The message you would like logged.
      */
     public static void log(String tag, String message) {
-        Log.d(tag, message);
+//        Log.i(tag, message);
+        System.out.print(message);
     }
 }
