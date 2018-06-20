@@ -3,6 +3,7 @@ import org.aspectj.bridge.MessageHandler
 import org.aspectj.tools.ajc.Main
 
 apply plugin: 'com.android.application'
+apply plugin: 'plugin.test'
 
 android {
     // http://tools.android.com/tech-docs/new-build-system/tips
@@ -30,15 +31,22 @@ android {
 repositories {
     jcenter()
     mavenCentral()
+    maven {
+        url uri('../repo')
+    }
 }
 
 buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        maven {
+            url uri('../repo')
+        }
     }
     dependencies {
         classpath 'org.aspectj:aspectjtools:1.8.9'
+        classpath 'com.example:plugin:2.0.0'
     }
 }
 
@@ -88,14 +96,15 @@ variants.all { variant ->
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile project(':player-java')
-    compile project(':player-armv7a')
-    compile project(':player-x86')
-    compile project(':player-armv5')
-    compile project(':apt-annotation')
-    compile project(':apt-processor')
+    implementation project(':player-java')
+    implementation project(':player-armv7a')
+    implementation project(':player-x86')
+    implementation project(':player-armv5')
+    implementation project(':apt-annotation')
+    implementation project(':apt-processor')
 //    compile 'org.aspectj:aspectjrt:1.8.9'
     // need API-21
     // compile project(':player-arm64')
-    compile project(path: ':libraryaspectj')
+    implementation project(path: ':libraryaspectj')
 }
+

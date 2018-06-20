@@ -269,3 +269,17 @@ https://blog.csdn.net/trinity2015/article/details/80739580
 //TODO ijkplayer 功能解析
 
 --------------------------------------------------------------------------------
+
+
+### ---2018/6/21
+
+加入javaassist 本地maven 
+后续javaassit 功能参照  T-MVP
+https://www.jianshu.com/p/dca3e2c8608a?from=timeline
+
+仓库参照
+http://www.jcodecraeer.com/a/anzhuokaifa/Android_Studio/2015/0227/2502.html
+
+//TODO ijkplayer 功能解析
+--------------------------------------------------------------------------------
+
