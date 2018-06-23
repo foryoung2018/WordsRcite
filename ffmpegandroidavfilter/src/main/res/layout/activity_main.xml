@@ -14,7 +14,6 @@
     <!--android:background="@drawable/icon_coin_big"-->
     <com.ws.ffmpegandroidavfilter.DragScaleView
         android:id="@+id/mysurface_view"
-        android:layout_below="@id/surface_view"
 
         android:adjustViewBounds="true"
         android:layout_marginLeft="50dp"
