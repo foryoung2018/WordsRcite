@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <!--<SurfaceView-->
+        <!--android:id="@+id/surface_view"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp" />-->
+    <!--android:background="@drawable/icon_coin_big"-->
+    <com.ws.ffmpegandroidavfilter.DragScaleView
+        android:id="@+id/mysurface_view"
+        android:layout_below="@id/surface_view"
+
+        android:adjustViewBounds="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="100dp"
+        android:layout_height="120dp"
+        android:clickable="true"/>
+</RelativeLayout>
