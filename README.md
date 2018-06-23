@@ -283,3 +283,9 @@ http://www.jcodecraeer.com/a/anzhuokaifa/Android_Studio/2015/0227/2502.html
 //TODO ijkplayer 功能解析
 --------------------------------------------------------------------------------
 
+### ---2018/6/23
+
+https://blog.csdn.net/junzia/article/details/52793354
+
+//TODO opengles 学习
+--------------------------------------------------------------------------------
