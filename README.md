@@ -236,50 +236,50 @@ target_link_libraries( # Specifies the target library.
 //TODO https://blog.csdn.net/m0_37677536/article/details/78561085
 
 
-### ---2018/6/17
+### ---2018/6/14
 
-ffmpeg avfilter 实现滤镜，水印等功能
+加入opengles
 
-https://blog.csdn.net/king1425/article/details/71609520
+https://developer.android.com/training/graphics/opengl/projection
 
-**libavfilter的关键函数如下所示：**
->avfilter_register_all()：注册所有AVFilter。
- avfilter_graph_alloc()：为FilterGraph分配内存。
- avfilter_graph_create_filter()：创建并向FilterGraph中添加一个Filter。
- avfilter_graph_parse_ptr()：将一串通过字符串描述的Graph添加到FilterGraph中。
- avfilter_graph_config()：检查FilterGraph的配置。
- av_buffersrc_add_frame()：向FilterGraph中加入一个AVFrame。
- av_buffersink_get_frame()：从FilterGraph中取出一个AVFrame。
+响应点击事件
+https://developer.android.com/training/graphics/opengl/touch
 
-**示例程序中提供了几种特效：**
->const char *filters_descr = "lutyuv='u=128:v=128'";
- //const char *filters_descr = "hflip";
- //const char *filters_descr = "hue='h=60:s=-3'";
- //const char *filters_descr = "crop=2/3*in_w:2/3*in_h";
- //const char *filters_descr = "drawbox=x=200:y=200:w=300:h=300:color=pink@0.5";
- //const char *filters_descr = "movie=/storage/emulated/0/ws.jpg[wm];[in][wm]overlay=5:5[out]";
- //const char *filters_descr="drawgrid=width=100:height=100:thickness=4:color=pink@0.9";
+### ---2018/6/15
 
-```C
-                //关键部分，转换pFrame 
-                
-                //* push the decoded frame into the filtergraph
-                if (av_buffersrc_add_frame(buffersrc_ctx, pFrame) < 0) {
-                    LOGD("Could not av_buffersrc_add_frame");
-                    break;
-                }
+加入opengles opensles ffmpeg demo
+https://blog.csdn.net/m0_37677536/article/details/78775007
 
-                //关键部分，获取转换pFrame 
-                ret = av_buffersink_get_frame(buffersink_ctx, pFrame);
-                if (ret < 0) {
-                    LOGD("Could not av_buffersink_get_frame");
-                    break;
-                }
-```
+**opengl 绘制YUV** 
+
+>步骤：
+>编写shader->编译shader->链成gpu程序（代码中的program）->分别创建yuv纹理对象->找到yuv纹理对象对应的显卡插槽（也就是要给gpu中运行的纹理对象传数据的地址）->给yuv纹理对象绑定数据->绘图。
+>shaderCode  CompileShader CreateProgram UseProgram SetupYUVTextures   SetupYUVTextures
 
 
-
-
-//TODO  opengl 实现特效
+//TODO 显示进度条，水印，缩放，旋转等功能
 
 --------------------------------------------------------------------------------
+
+### ---2018/6/20
+
+加入aspectj 注解AOP
+https://blog.csdn.net/trinity2015/article/details/80739580
+
+//TODO ijkplayer 功能解析
+
+--------------------------------------------------------------------------------
+
+
+### ---2018/6/21
+
+加入javaassist 本地maven 
+后续javaassit 功能参照  T-MVP
+https://www.jianshu.com/p/dca3e2c8608a?from=timeline
+
+仓库参照
+http://www.jcodecraeer.com/a/anzhuokaifa/Android_Studio/2015/0227/2502.html
+
+//TODO ijkplayer 功能解析
+--------------------------------------------------------------------------------
+

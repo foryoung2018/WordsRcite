@@ -136,4 +136,7 @@
     <color name="color_d8d8d8_60">#99D8D8D8</color>
     <color name="color_ededed">#EDEDED</color>
     <color name="color_EE4545">#EE4545</color>
+
+    <color name="colorTheme">#2a8ac0</color>
+    <color name="colorText">#eee</color>
 </resources>

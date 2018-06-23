@@ -6,8 +6,10 @@ import android.content.pm.PackageManager;
 import android.opengl.EGLConfig;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,6 +18,9 @@ import android.widget.Toast;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.example.basecommonlibrary.CommonStation;
 import com.example.basecommonlibrary.RouterCommonUtil;
+import com.example.libraryvideo.shape.Square;
+import com.example.libraryvideo.shape.Triangle;
+import com.example.libraryvideo.surface.MyGLSurfaceView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -135,38 +140,4 @@ public class ActivityOne extends AppCompatActivity implements View.OnClickListen
     public static native int JniCppSub(int a,int b);
     public static native int FFmpegTest(String input,String output);
 
-    class MyGLSurfaceView extends GLSurfaceView {
-
-        private final MyGLRenderer mRenderer;
-
-        public MyGLSurfaceView(Context context){
-            super(context);
-
-            // Create an OpenGL ES 2.0 context
-            setEGLContextClientVersion(2);
-
-            mRenderer = new MyGLRenderer();
-
-            // Set the Renderer for drawing on the GLSurfaceView
-            setRenderer(mRenderer);
-        }
-    }
-
-    public class MyGLRenderer implements GLSurfaceView.Renderer {
-
-        public void onDrawFrame(GL10 unused) {
-            // Redraw background color
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        }
-
-        @Override
-        public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
-            // Set the background frame color
-            GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        }
-
-        public void onSurfaceChanged(GL10 unused, int width, int height) {
-            GLES20.glViewport(0, 0, width, height);
-        }
-    }
 }

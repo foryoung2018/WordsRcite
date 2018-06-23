@@ -3,6 +3,8 @@ package tv.danmaku.ijk.media.sample;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.libraryaspectj.DebugTrace;
+
 import java.lang.reflect.Method;
 
 
@@ -11,6 +13,7 @@ import java.lang.reflect.Method;
  */
 public class InjectActivity {
     private static final ArrayMap<String, Object> injectMap = new ArrayMap<>();
+
 
     public static void inject(AppCompatActivity activity) {
         String className = activity.getClass().getName();

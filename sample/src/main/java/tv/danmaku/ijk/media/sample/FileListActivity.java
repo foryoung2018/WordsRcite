@@ -10,6 +10,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.apt_annotation.AttachView;
+import com.example.libraryaspectj.DebugTrace;
 
 @AttachView
 public class FileListActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -26,6 +28,7 @@ public class FileListActivity extends ActionBarActivity implements LoaderManager
 
     boolean sortByName = false;
 
+    @DebugTrace
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
