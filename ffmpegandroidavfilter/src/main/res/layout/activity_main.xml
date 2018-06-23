@@ -7,8 +7,19 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <SurfaceView
-        android:id="@+id/surface_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <!--<SurfaceView-->
+        <!--android:id="@+id/surface_view"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp" />-->
+    <!--android:background="@drawable/icon_coin_big"-->
+    <com.ws.ffmpegandroidavfilter.DragScaleView
+        android:id="@+id/mysurface_view"
+        android:layout_below="@id/surface_view"
+
+        android:adjustViewBounds="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="100dp"
+        android:layout_height="120dp"
+        android:clickable="true"/>
 </RelativeLayout>

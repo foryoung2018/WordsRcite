@@ -13,13 +13,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     SurfaceHolder surfaceHolder;
+    private DragScaleView dragScaleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
-        surfaceHolder = surfaceView.getHolder();
+//        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+        dragScaleView = (DragScaleView) findViewById(R.id.mysurface_view);
+        surfaceHolder = dragScaleView.getHolder();
         surfaceHolder.addCallback(this);
     }
 
