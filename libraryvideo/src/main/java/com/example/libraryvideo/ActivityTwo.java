@@ -179,7 +179,7 @@ public class ActivityTwo extends Activity {
                 break;
             case STOP:
                 {
-
+                    avPlayer.pauseOrPlay();
                 }
                 break;
             case ACCELE:

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.libraryvideo.YLog;
 import com.example.libraryvideo.surface.GlView;
 
 
@@ -19,6 +20,9 @@ public class AVPlayer {
     GlView mGlView;
     public int number = 10;
     public int isExit = 0;
+
+    private boolean isPause = false;
+
     String myStr = "this is string test";
     public int OpenAVWithUrlAndView(String url, TextView view, GlView glView){
         mGlView = glView;
@@ -41,10 +45,20 @@ public class AVPlayer {
         mProgress.setMax(getTotel());
     }
 
+
+    public void pauseOrPlay() {
+        isPause = !isPause;
+        Log.i("*** yang ","isPause" + isPause);
+    }
+
     public class ReadPktThread implements Runnable {
         @Override
         public void run() {
             while (isExit == 0){
+                YLog.i("ReadPktThread Runnable");
+                if(isPause){
+                    continue;
+                }
                 int ret = 0;
                 ret = ReadPkt();
                 if (ret == 0){
