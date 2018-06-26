@@ -7,8 +7,14 @@
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true">
+        <!--一些opensles的初步功能-->
+        <activity android:name=".ActivityAudio" />
+        <!--一些opengles的初步功能-->
         <activity android:name="com.example.libraryvideo.ActivityOne" />
+        <!--ffmpeg opengles opensles音视频-->
+        <activity android:name="com.example.libraryvideo.ActivityTwo" />
     </application>
+
 
    <!-- <application
         android:allowBackup="true"

@@ -289,3 +289,12 @@ https://blog.csdn.net/junzia/article/details/52793354
 
 //TODO opengles 学习
 --------------------------------------------------------------------------------
+ 
+ ### ---2018/6/26
+ 
+add audio opensles in libraryvideo in ActivityAudio router in app
+
+ref to https://github.com/wanliyang1990/Android_OpenSl_Audio/tree/master
+
+//TODO opengles完善
+

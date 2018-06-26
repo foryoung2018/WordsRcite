@@ -87,7 +87,8 @@ public class NewActivity extends AppCompatActivity
     }
 
     private void start(){
-        RouterCommonUtil.startLibraryOneActivity(this);
+//        RouterCommonUtil.startLibraryOneActivity(this);
+        RouterCommonUtil.startLibraryaudioActivity(this);
     }
 
     private void initBottom() {
@@ -97,7 +98,6 @@ public class NewActivity extends AppCompatActivity
                 .addItem(new BottomBarTab(this, R.drawable.translate))
                 .addItem(new BottomBarTab(this, R.drawable.video))
                 .addItem(new BottomBarTab(this, R.drawable.ic_account_circle_white_24dp));
-
         mBottomBar.setOnTabSelectedListener(new Listener(this));
     }
 

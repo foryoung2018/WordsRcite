@@ -16,7 +16,8 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ActivityTwo" >
+        <!--一些opensles的初步功能-->
+        <activity android:name=".ActivityAudio" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +26,7 @@
         </activity>
 
         <!--一些opengles的初步功能-->
-        <activity android:name="com.example.libraryvideo.ActivityOne" />
+        <!--<activity android:name="com.example.libraryvideo.ActivityOne" />-->
         <!--ffmpeg opengles opensles音视频-->
         <!--<activity android:name="com.example.libraryvideo.ActivityTwo" />-->
     </application>

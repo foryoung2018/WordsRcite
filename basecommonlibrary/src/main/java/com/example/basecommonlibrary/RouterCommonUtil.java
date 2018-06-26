@@ -72,6 +72,14 @@ public class RouterCommonUtil {
             }
         });
     }
+    public static void startLibraryaudioActivity(final Activity activity) {
+        ARouter.getInstance().build("/libraryvideo/audio").navigation(activity, new InterruptCallback() {
+            @Override
+            public void onInterrupt(Postcard postcard) {
+//                toastInterruptInfo(activity, postcard);
+            }
+        });
+    }
 
     public static void startLibraryTwoActivity(final Activity activity) {
         ARouter.getInstance().build("/libraryTwo/主页").navigation(activity, new InterruptCallback() {
