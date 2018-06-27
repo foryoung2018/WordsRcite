@@ -298,3 +298,8 @@ ref to https://github.com/wanliyang1990/Android_OpenSl_Audio/tree/master
 
 //TODO opengles完善
 
+--------------------------------------------------------------------------------
+
+### ---2018/6/27
+
+定位实现

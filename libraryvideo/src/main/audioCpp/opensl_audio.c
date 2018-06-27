@@ -22,6 +22,8 @@
 SLObjectItf engineObject = NULL;
 SLEngineItf engineEngine = NULL;
 
+static SLSeekItf fdPlayerSeek;
+
 //混音器
 SLObjectItf outputMixObject = NULL;
 SLEnvironmentalReverbItf outputMixEnvironmentalReverb = NULL;
@@ -59,7 +61,6 @@ void createEngine()
     result = (*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
     result = (*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine);
 }
-
 
 JNIEXPORT void JNICALL
 Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1assets(JNIEnv *env, jobject instance, jobject assetManager, jstring filename) {
@@ -119,9 +120,26 @@ Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1assets(JNIEnv *en
     result = (*fdPlayerObject)->GetInterface(fdPlayerObject, SL_IID_PLAY, &fdPlayerPlay);
     (void)result;
 
+
     // 得到声音控制接口
     result = (*fdPlayerObject)->GetInterface(fdPlayerObject, SL_IID_VOLUME, &fdPlayerVolume);
     (void)result;
+
+
+    // 实现seek 功能 定位 到50s ----s-----
+
+    fdPlayerSeek = NULL;
+
+    // get the seek interface
+    result = (*fdPlayerObject)->GetInterface(fdPlayerObject, SL_IID_SEEK, &fdPlayerSeek);
+    (void)result;
+
+
+    (*fdPlayerSeek)->SetPosition(fdPlayerSeek,
+                                 50000,
+                                 SL_SEEKMODE_FAST);
+
+    // 实现seek 功能 定位 到50s ----e-----
 
     // 设置播放状态
     if (NULL != fdPlayerPlay) {
@@ -130,84 +148,13 @@ Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1assets(JNIEnv *en
         (void)result;
     }
 
+
+
+
     //设置播放音量 （100 * -50：静音 ）
     (*fdPlayerVolume)->SetVolumeLevel(fdPlayerVolume, 20 * -50);
 
 }
-
-//JNIEXPORT void JNICALL
-//Java_com_ywl5320_openslaudio_MainActivity_playAudioByOpenSL_1uri(JNIEnv *env, jobject instance, jstring uri) {
-//    SLresult result;
-//    release();
-//    // convert Java string to UTF-8
-//    const char *utf8 = (*env)->GetStringUTFChars(env, uri, NULL);
-//
-//    //第一步，创建引擎
-//    createEngine();
-//
-//    //第二步，创建混音器
-//    const SLInterfaceID mids[1] = {SL_IID_ENVIRONMENTALREVERB};
-//    const SLboolean mreq[1] = {SL_BOOLEAN_FALSE};
-//    result = (*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, mids, mreq);
-//    (void)result;
-//    result = (*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE);
-//    (void)result;
-//    result = (*outputMixObject)->GetInterface(outputMixObject, SL_IID_ENVIRONMENTALREVERB, &outputMixEnvironmentalReverb);
-//    if (SL_RESULT_SUCCESS == result) {
-//        result = (*outputMixEnvironmentalReverb)->SetEnvironmentalReverbProperties(
-//                outputMixEnvironmentalReverb, &reverbSettings);
-//        (void)result;
-//    }
-//
-//    //第三步，设置播放器参数和创建播放器
-//    // configure audio source
-//    // (requires the INTERNET permission depending on the uri parameter)
-//    SLDataLocator_URI loc_uri = {SL_DATALOCATOR_URI, (SLchar *) utf8};
-//    SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
-//    SLDataSource audioSrc = {&loc_uri, &format_mime};
-//
-//    // configure audio sink
-//    SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
-//    SLDataSink audioSnk = {&loc_outmix, NULL};
-//
-//    // create audio player
-//    const SLInterfaceID ids[3] = {SL_IID_SEEK, SL_IID_MUTESOLO, SL_IID_VOLUME};
-//    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
-//    result = (*engineEngine)->CreateAudioPlayer(engineEngine, &uriPlayerObject, &audioSrc, &audioSnk, 3, ids, req);
-//
-//    (void)result;
-//
-//    // release the Java string and UTF-8
-//    (*env)->ReleaseStringUTFChars(env, uri, utf8);
-//
-//    // realize the player
-//    result = (*uriPlayerObject)->Realize(uriPlayerObject, SL_BOOLEAN_FALSE);
-//    // this will always succeed on Android, but we check result for portability to other platforms
-//    if (SL_RESULT_SUCCESS != result) {
-//        (*uriPlayerObject)->Destroy(uriPlayerObject);
-//        uriPlayerObject = NULL;
-//        return;
-//    }
-//
-//    // get the play interface
-//    result = (*uriPlayerObject)->GetInterface(uriPlayerObject, SL_IID_PLAY, &uriPlayerPlay);
-//    (void)result;
-//
-//
-//    // get the volume interface
-//    result = (*uriPlayerObject)->GetInterface(uriPlayerObject, SL_IID_VOLUME, &uriPlayerVolume);
-//    (void)result;
-//
-//    if (NULL != uriPlayerPlay) {
-//
-//        // set the player's state
-//        result = (*uriPlayerPlay)->SetPlayState(uriPlayerPlay, SL_PLAYSTATE_PLAYING);
-//        (void)result;
-//    }
-//
-//    //设置播放音量 （100 * -50：静音 ）
-////    (*uriPlayerVolume)->SetVolumeLevel(uriPlayerVolume, 0 * -50);
-//}
 
 void release()
 {
@@ -288,7 +235,7 @@ void * pcmBufferCallBack(SLAndroidBufferQueueItf bf, void * context)
 
 JNIEXPORT void JNICALL
 Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1pcm(JNIEnv *env, jobject instance,
-                                                                 jstring pamPath_) {
+                                                                   jstring pamPath_) {
     release();
     const char *pamPath = (*env)->GetStringUTFChars(env, pamPath_, 0);
     pcmFile = fopen(pamPath, "r");
@@ -359,24 +306,3 @@ Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1pcm(JNIEnv *env, 
 
     (*env)->ReleaseStringUTFChars(env, pamPath_, pamPath);
 }
-
-//extern "C"
-//JNIEXPORT void JNICALL
-//Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1assets(JNIEnv *env, jobject instance,
-//                                                                      jobject assetManager,
-//                                                                      jstring filename_) {
-//    const char *filename = env->GetStringUTFChars(filename_, 0);
-//
-//    // TODO
-//
-//    env->ReleaseStringUTFChars(filename_, filename);
-//}extern "C"
-//JNIEXPORT void JNICALL
-//Java_com_example_libraryvideo_ActivityAudio_playAudioByOpenSL_1pcm(JNIEnv *env, jobject instance,
-//                                                                   jstring pamPath_) {
-//    const char *pamPath = env->GetStringUTFChars(pamPath_, 0);
-//
-//    // TODO
-//
-//    env->ReleaseStringUTFChars(pamPath_, pamPath);
-//}
