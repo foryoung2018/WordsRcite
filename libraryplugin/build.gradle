@@ -5,7 +5,7 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
 
-    compile 'com.android.tools.build:gradle:3.0.0'
+    compile 'com.android.tools.build:gradle:3.0.1'
     compile 'org.javassist:javassist:3.22.0-GA'
     compile 'org.aspectj:aspectjtools:1.8.1'
 }
@@ -24,6 +24,23 @@ repositories {
 //        }
 //    }
 //}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+
 
 //发布到本地
 uploadArchives {

@@ -283,3 +283,13 @@ http://www.jcodecraeer.com/a/anzhuokaifa/Android_Studio/2015/0227/2502.html
 //TODO ijkplayer 功能解析
 --------------------------------------------------------------------------------
 
+### ---2018/6/29
+
+加入picture module 音视频 显示实现  自定义view 自定义surfaceview显示bitmap
+
+http://www.cnblogs.com/renhui/p/7452572.html //Android 音视频开发学习思路
+实现第一步 Android 音视频开发(一) : 通过三种方式绘制图片
+
+//TODO ijkplayer 功能解析
+http://www.cnblogs.com/renhui/p/7457321.html //Android 音视频开发(二)：使用 AudioRecord 采集音频PCM并保存到文件
+--------------------------------------------------------------------------------
