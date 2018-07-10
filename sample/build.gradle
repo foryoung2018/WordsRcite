@@ -26,6 +26,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -108,3 +112,7 @@ dependencies {
     implementation project(path: ':libraryaspectj')
 }
 
+//我们自定义的
+testCreatJavaConfig{
+    str = "动态生成java类的字符串"
+}

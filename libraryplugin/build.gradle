@@ -14,16 +14,6 @@ dependencies {
 repositories {
     mavenCentral()
 }
-//group='com.example'
-//version='1.0.0'
-
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            repository(url: uri('../repo'))
-//        }
-//    }
-//}
 
 buildscript {
     repositories {
