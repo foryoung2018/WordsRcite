@@ -293,3 +293,12 @@ http://www.cnblogs.com/renhui/p/7452572.html //Android 音视频开发学习思�
 //TODO ijkplayer 功能解析
 http://www.cnblogs.com/renhui/p/7457321.html //Android 音视频开发(二)：使用 AudioRecord 采集音频PCM并保存到文件
 --------------------------------------------------------------------------------
+
+
+### ---2018/7/11
+http://www.cnblogs.com/renhui/p/7457321.html
+加入audio audiotrack audiorecord 
+
+//TODO Android 音视频开发(三)：使用 AudioTrack 播放PCM音频 http://www.cnblogs.com/renhui/p/7463287.html
+
+--------------------------------------------------------------------------------
