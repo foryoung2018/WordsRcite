@@ -306,6 +306,6 @@ http://www.cnblogs.com/renhui/p/7457321.html
 ### ---2018/7/12
 http://www.cnblogs.com/renhui/p/7472778.html
 使用 Camera API 采集视频数据并保存到文件，分别使用 SurfaceView、TextureView 来预览 Camera 数据，取到 NV21 的数据回调。
-  
+     
 //TODO Android 音视频开发(五)：使用 MediaExtractor 和 MediaMuxer API 解析和封装 mp4 文件 http://www.cnblogs.com/renhui/p/7474096.html
 --------------------------------------------------------------------------------
