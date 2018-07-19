@@ -6,12 +6,14 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/apt-annotation/apt-annotation.iml" filepath="$PROJECT_DIR$/apt-annotation/apt-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/apt-processor/apt-processor.iml" filepath="$PROJECT_DIR$/apt-processor/apt-processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/audiodemo/audiodemo.iml" filepath="$PROJECT_DIR$/audiodemo/audiodemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/basecommonlibrary/basecommonlibrary.iml" filepath="$PROJECT_DIR$/basecommonlibrary/basecommonlibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/ffmpegandroidavfilter/ffmpegandroidavfilter.iml" filepath="$PROJECT_DIR$/ffmpegandroidavfilter/ffmpegandroidavfilter.iml" />
       <module fileurl="file://$PROJECT_DIR$/indexlib/indexlib.iml" filepath="$PROJECT_DIR$/indexlib/indexlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraryaspectj/libraryaspectj.iml" filepath="$PROJECT_DIR$/libraryaspectj/libraryaspectj.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraryplugin/libraryplugin.iml" filepath="$PROJECT_DIR$/libraryplugin/libraryplugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraryvideo/libraryvideo.iml" filepath="$PROJECT_DIR$/libraryvideo/libraryvideo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/picture/picture.iml" filepath="$PROJECT_DIR$/picture/picture.iml" />
       <module fileurl="file://$PROJECT_DIR$/player-arm64/player-arm64.iml" filepath="$PROJECT_DIR$/player-arm64/player-arm64.iml" />
       <module fileurl="file://$PROJECT_DIR$/player-armv5/player-armv5.iml" filepath="$PROJECT_DIR$/player-armv5/player-armv5.iml" />
       <module fileurl="file://$PROJECT_DIR$/player-armv7a/player-armv7a.iml" filepath="$PROJECT_DIR$/player-armv7a/player-armv7a.iml" />
