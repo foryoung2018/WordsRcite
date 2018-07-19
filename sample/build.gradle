@@ -33,6 +33,7 @@ android {
 }
 
 repositories {
+    google()
     jcenter()
     mavenCentral()
     maven {
@@ -42,6 +43,7 @@ repositories {
 
 buildscript {
     repositories {
+        google()
         jcenter()
         mavenCentral()
         maven {
