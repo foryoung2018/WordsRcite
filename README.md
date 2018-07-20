@@ -309,3 +309,4 @@ http://www.cnblogs.com/renhui/p/7472778.html
 
 //TODO Android 音视频开发(五)：使用 MediaExtractor 和 MediaMuxer API 解析和封装 mp4 文件 http://www.cnblogs.com/renhui/p/7474096.html
 --------------------------------------------------------------------------------
+
