@@ -23,7 +23,7 @@ public class LivePusher implements SurfaceHolder.Callback {
         pushNative = new PushNative();
 
         //实例化视频推流器
-        VideoParam videoParam = new VideoParam(480, 320, Camera.CameraInfo.CAMERA_FACING_BACK);
+        VideoParam videoParam = new VideoParam(1080, 1920, Camera.CameraInfo.CAMERA_FACING_BACK);
         videoPusher = new VideoPusher(surfaceHolder,videoParam,pushNative);
 
         //实例化音频推流器
@@ -41,10 +41,11 @@ public class LivePusher implements SurfaceHolder.Callback {
     /**
      * 开始推流
      */
-    public void startPush(String url) {
+    public void startPush(String url,LiveStateChangeListener liveStateChangeListener) {
         videoPusher.startPush();
         audioPusher.startPush();
         pushNative.startPush(url);
+        pushNative.setLiveStateChangeListener(liveStateChangeListener);
     }
 
 
@@ -55,6 +56,7 @@ public class LivePusher implements SurfaceHolder.Callback {
         videoPusher.stopPush();
         audioPusher.stopPush();
         pushNative.stopPush();
+        pushNative.removeLiveStateChangeListener();
     }
 
     /**
@@ -78,7 +80,7 @@ public class LivePusher implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        stopPush();
+            stopPush();
         release();
     }
 }

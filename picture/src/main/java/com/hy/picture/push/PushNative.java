@@ -7,6 +7,21 @@ public class PushNative {
     public native void stopPush();
 
     public native void release();
+    public static final int CONNECT_FAILED = 101;
+    public static final int INIT_FAILED = 102;
+
+
+    LiveStateChangeListener liveStateChangeListener;
+
+    /**
+     * 接收Native层抛出的错误
+     * @param code
+     */
+    public void throwNativeError(int code){
+        if(liveStateChangeListener != null){
+            liveStateChangeListener.onError(code);
+        }
+    }
 
     /**
      * 设置视频参数
@@ -37,6 +52,16 @@ public class PushNative {
      * @param len
      */
     public native void fireAudio(byte[] data, int len);
+
+
+
+    public void setLiveStateChangeListener(LiveStateChangeListener liveStateChangeListener) {
+        this.liveStateChangeListener = liveStateChangeListener;
+    }
+
+    public void removeLiveStateChangeListener(){
+        this.liveStateChangeListener = null;
+    }
 
     static{
         System.loadLibrary("push");

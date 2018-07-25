@@ -1,5 +1,6 @@
 package com.hy.picture.push;
 
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
@@ -73,12 +74,18 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camer
         try {
             //SurfaceView初始化完成，开始相机预览
             mCamera = Camera.open(videoParams.getCameraId());
+            Camera.Parameters parameters = mCamera.getParameters();
+            //设置相机参数
+            parameters.setPreviewFormat(ImageFormat.NV21); //YUV 预览图像的像素格式
+            parameters.setPreviewSize(videoParams.getWidth(), videoParams.getHeight()); //预览画面宽高
+            mCamera.setParameters(parameters);
+            //parameters.setPreviewFpsRange(videoParams.getFps()-1, videoParams.getFps());
             mCamera.setPreviewDisplay(surfaceHolder);
             //获取预览图像数据
             buffers = new byte[videoParams.getWidth() * videoParams.getHeight() * 4];
             mCamera.addCallbackBuffer(buffers);
             mCamera.setPreviewCallbackWithBuffer(this);
-
+            mCamera.setDisplayOrientation(90);
             mCamera.startPreview();
         } catch (IOException e) {
             e.printStackTrace();

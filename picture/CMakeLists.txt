@@ -1,50 +1,63 @@
-# Sets the minimum version of CMake required to build the native
-# library. You should either keep the default value or only pass a
-# value of 3.4.0 or lower.
-
 cmake_minimum_required(VERSION 3.4.1)
 
-
 include_directories(
-     ${CMAKE_SOURCE_DIR}/libs/x264/include
+     ${CMAKE_SOURCE_DIR}/libs/include   #此处忽略
 )
-
-add_library(
-             push
-             SHARED
-             src/main/cpp/push.cpp )
 
 find_library(
               log-lib
               log )
 
+add_library(push
+            SHARED
+            src/main/cpp/push.c      #c代码文件路径
+            src/main/cpp/queue.c      #c代码文件路径
+            )
 
-# set(distribution_DIR ${CMAKE_SOURCE_DIR}/../../../../libs)
-
-add_library( x264
-             SHARED
-             IMPORTED )
-set_target_properties( x264
-                       PROPERTIES IMPORTED_LOCATION
-                       ../../../../libs/x264/armeabi-v7a/libavcodec.so )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-
-  add_library(
-              avcodec
-              SHARED
-              IMPORTED
-              )
+add_library(
+            x264
+            STATIC
+            IMPORTED
+            )
 
 set_target_properties(
-avcodec
-PROPERTIES IMPORTED_LOCATION
-../../../../libs/x264/armeabi-v7a/libavcodec.so
-)
+              x264
+              PROPERTIES IMPORTED_LOCATION
+              ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libx264.a
+              )
+
+add_library(
+            faac
+            STATIC
+            IMPORTED
+            )
+
+set_target_properties(
+              faac
+              PROPERTIES IMPORTED_LOCATION
+              ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libfaac.a
+              )
+
+add_library(
+            rtmp
+            STATIC
+            IMPORTED
+            )
+
+set_target_properties(
+              rtmp
+              PROPERTIES IMPORTED_LOCATION
+              ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/librtmp.a
+              )
+
 
 include_directories(libs/include)
 
-#target_include_directories(push PRIVATE libs/include)
-
-target_link_libraries( push log android avcodec
-                       ${log-lib} )
+target_link_libraries( # Specifies the target library.
+        push
+        x264
+        faac
+        rtmp
+        android
+        ${log-lib}
+)
