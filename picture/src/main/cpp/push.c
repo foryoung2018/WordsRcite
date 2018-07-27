@@ -1,7 +1,3 @@
-//
-// Created by foryoung on 2018/7/23.
-//
-
 #include <jni.h>
 #include <android/log.h>
 #include <android/native_window.h>
@@ -13,17 +9,12 @@
 #include "queue.h"
 #include "rtmp.h"
 #include "faac.h"
-
-
 #ifndef TRUE
 #define TRUE	1
 #define FALSE	0
 #endif
-
 #define CONNECT_FAILED 101
 #define INIT_FAILED 102
-
-
 //x264编码输入图像YUV420P
 x264_picture_t pic_in;
 x264_picture_t pic_out;
@@ -51,13 +42,9 @@ jclass jcls_push_native;
 jmethodID jmid_throw_native_error;
 JavaVM *javaVM;
 
-
-
 #define  LOG_TAG    "huyang picture module"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-
 
 /**
  * 加入RTMPPacket队列，等待发送线程发送
@@ -71,116 +58,6 @@ void add_rtmp_packet(RTMPPacket *packet){
     pthread_mutex_unlock(&mutex);
 }
 
-
-/**
- * 发送h264帧信息
- */
-void add_264_body(unsigned char *buf ,int len){
-    //去掉起始码(界定符)
-    if(buf[2] == 0x00){  //00 00 00 01
-        buf += 4;
-        len -= 4;
-    }else if(buf[2] == 0x01){ // 00 00 01
-        buf += 3;
-        len -= 3;
-    }
-    int body_size = len + 9;
-    RTMPPacket *packet = malloc(sizeof(RTMPPacket));
-    RTMPPacket_Alloc(packet,body_size);
-
-    unsigned char * body = packet->m_body;
-    //当NAL头信息中，type（5位）等于5，说明这是关键帧NAL单元
-    //buf[0] NAL Header与运算，获取type，根据type判断关键帧和普通帧
-    //00000101 & 00011111(0x1f) = 00000101
-    int type = buf[0] & 0x1f;
-    //Inter Frame 帧间压缩
-    body[0] = 0x27;//VideoHeaderTag:FrameType(2=Inter Frame)+CodecID(7=AVC)
-    //IDR I帧图像
-    if (type == NAL_SLICE_IDR) {
-        body[0] = 0x17;//VideoHeaderTag:FrameType(1=key frame)+CodecID(7=AVC)
-    }
-    //AVCPacketType = 1
-    body[1] = 0x01; /*nal unit,NALUs（AVCPacketType == 1)*/
-    body[2] = 0x00; //composition time 0x000000 24bit
-    body[3] = 0x00;
-    body[4] = 0x00;
-
-    //写入NALU信息，右移8位，一个字节的读取？
-    body[5] = (len >> 24) & 0xff;
-    body[6] = (len >> 16) & 0xff;
-    body[7] = (len >> 8) & 0xff;
-    body[8] = (len) & 0xff;
-
-    /*copy data*/
-    memcpy(&body[9], buf, len);
-
-    packet->m_hasAbsTimestamp = 0;
-    packet->m_nBodySize = body_size;
-    packet->m_packetType = RTMP_PACKET_TYPE_VIDEO;//当前packet的类型：Video
-    packet->m_nChannel = 0x04;
-    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
-//	packet->m_nTimeStamp = -1;
-    packet->m_nTimeStamp = RTMP_GetTime() - start_time;//记录了每一个tag相对于第一个tag（File Header）的相对时间
-    add_rtmp_packet(packet);
-
-}
-
-
-
-void add_264_sequence_header(unsigned char* pps,unsigned char* sps,int pps_len,int sps_len){
-    int body_size = 16 + sps_len + pps_len; //按照H264标准配置SPS和PPS，共使用了16字节
-    RTMPPacket *packet = malloc(sizeof(RTMPPacket));
-    //RTMPPacket初始化
-    RTMPPacket_Alloc(packet,body_size);
-    RTMPPacket_Reset(packet);
-
-    unsigned char * body = packet->m_body;
-    int i = 0;
-    //二进制表示：00010111
-    body[i++] = 0x17;//VideoHeaderTag:FrameType(1=key frame)+CodecID(7=AVC)
-    body[i++] = 0x00;//AVCPacketType = 0表示设置AVCDecoderConfigurationRecord
-    //composition time 0x000000 24bit ?
-    body[i++] = 0x00;
-    body[i++] = 0x00;
-    body[i++] = 0x00;
-
-    /*AVCDecoderConfigurationRecord*/
-    body[i++] = 0x01;//configurationVersion，版本为1
-    body[i++] = sps[1];//AVCProfileIndication
-    body[i++] = sps[2];//profile_compatibility
-    body[i++] = sps[3];//AVCLevelIndication
-    //?
-    body[i++] = 0xFF;//lengthSizeMinusOne,H264 视频中 NALU的长度，计算方法是 1 + (lengthSizeMinusOne & 3),实际测试时发现总为FF，计算结果为4.
-
-    /*sps*/
-    body[i++] = 0xE1;//numOfSequenceParameterSets:SPS的个数，计算方法是 numOfSequenceParameterSets & 0x1F,实际测试时发现总为E1，计算结果为1.
-    body[i++] = (sps_len >> 8) & 0xff;//sequenceParameterSetLength:SPS的长度
-    body[i++] = sps_len & 0xff;//sequenceParameterSetNALUnits
-    memcpy(&body[i], sps, sps_len);
-    i += sps_len;
-
-    /*pps*/
-    body[i++] = 0x01;//numOfPictureParameterSets:PPS 的个数,计算方法是 numOfPictureParameterSets & 0x1F,实际测试时发现总为E1，计算结果为1.
-    body[i++] = (pps_len >> 8) & 0xff;//pictureParameterSetLength:PPS的长度
-    body[i++] = (pps_len) & 0xff;//PPS
-    memcpy(&body[i], pps, pps_len);
-    i += pps_len;
-
-    //Message Type，RTMP_PACKET_TYPE_VIDEO：0x09
-    packet->m_packetType = RTMP_PACKET_TYPE_VIDEO;
-    //Payload Length
-    packet->m_nBodySize = body_size;
-    //Time Stamp：4字节
-    //记录了每一个tag相对于第一个tag（File Header）的相对时间。
-    //以毫秒为单位。而File Header的time stamp永远为0。
-    packet->m_nTimeStamp = 0;
-    packet->m_hasAbsTimestamp = 0;
-    packet->m_nChannel = 0x04; //Channel ID，Audio和Vidio通道
-    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM; //?
-    //将RTMPPacket加入队列
-    add_rtmp_packet(packet);
-
-}
 
 /**
  * 添加AAC头信息
@@ -212,21 +89,43 @@ void add_aac_sequence_header(){
 
 }
 
+
+/**
+ * 添加AAC rtmp packet
+ */
+void add_aac_body(unsigned char *buf, int len){
+    int body_size = 2 + len;
+    RTMPPacket *packet = malloc(sizeof(RTMPPacket));
+    //RTMPPacket初始化
+    RTMPPacket_Alloc(packet,body_size);
+    RTMPPacket_Reset(packet);
+    unsigned char * body = packet->m_body;
+    //头信息配置
+    /*AF 00 + AAC RAW data*/
+    body[0] = 0xAF;//10 5 SoundFormat(4bits):10=AAC,SoundRate(2bits):3=44kHz,SoundSize(1bit):1=16-bit samples,SoundType(1bit):1=Stereo sound
+    body[1] = 0x01;//AACPacketType:1表示AAC raw
+    memcpy(&body[2], buf, len); /*spec_buf是AAC raw数据*/
+    packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
+    packet->m_nBodySize = body_size;
+    packet->m_nChannel = 0x04;
+    packet->m_hasAbsTimestamp = 0;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+    packet->m_nTimeStamp = RTMP_GetTime() - start_time;
+    add_rtmp_packet(packet);
+}
+
 //获取JavaVM
 jint JNI_OnLoad(JavaVM* vm, void* reserved){
     javaVM = vm;
     return JNI_VERSION_1_4;
 }
 
-
 /**
  * 向Java层发送错误信息
  */
-
 void throwNativeError(JNIEnv *env,int code){
     (*env)->CallVoidMethod(env,jobj_push_native,jmid_throw_native_error,code);
 }
-
 
 /**
  * 从队列中不断拉取RTMPPacket发送给流媒体服务器）
@@ -296,32 +195,6 @@ void *push_thread(void * arg){
     return 0;
 }
 
-
-
-/**
- * 添加AAC rtmp packet
- */
-void add_aac_body(unsigned char *buf, int len){
-    int body_size = 2 + len;
-    RTMPPacket *packet = malloc(sizeof(RTMPPacket));
-    //RTMPPacket初始化
-    RTMPPacket_Alloc(packet,body_size);
-    RTMPPacket_Reset(packet);
-    unsigned char * body = packet->m_body;
-    //头信息配置
-    /*AF 00 + AAC RAW data*/
-    body[0] = 0xAF;//10 5 SoundFormat(4bits):10=AAC,SoundRate(2bits):3=44kHz,SoundSize(1bit):1=16-bit samples,SoundType(1bit):1=Stereo sound
-    body[1] = 0x01;//AACPacketType:1表示AAC raw
-    memcpy(&body[2], buf, len); /*spec_buf是AAC raw数据*/
-    packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
-    packet->m_nBodySize = body_size;
-    packet->m_nChannel = 0x04;
-    packet->m_hasAbsTimestamp = 0;
-    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
-    packet->m_nTimeStamp = RTMP_GetTime() - start_time;
-    add_rtmp_packet(packet);
-}
-
 JNIEXPORT void JNICALL
 Java_com_hy_picture_push_PushNative_startPush(JNIEnv *env, jobject instance, jstring url_) {
 //jobj(PushNative对象)
@@ -357,24 +230,19 @@ Java_com_hy_picture_push_PushNative_startPush(JNIEnv *env, jobject instance, jst
     (*env)->ReleaseStringUTFChars(env,url_,url_cstr);
 }
 
-
 JNIEXPORT void JNICALL
 Java_com_hy_picture_push_PushNative_stopPush(JNIEnv *env, jobject instance) {
-
     is_pushing = FALSE;
-
 }
 
 
 JNIEXPORT void JNICALL
 Java_com_hy_picture_push_PushNative_release(JNIEnv *env, jobject instance) {
-
     (*env)->DeleteGlobalRef(env,jcls_push_native);
     (*env)->DeleteGlobalRef(env,jobj_push_native);
     (*env)->DeleteGlobalRef(env,jmid_throw_native_error);
 
 }
-
 
 JNIEXPORT void JNICALL
 Java_com_hy_picture_push_PushNative_setVideoOptions(JNIEnv *env, jobject instance, jint width,
@@ -387,6 +255,11 @@ Java_com_hy_picture_push_PushNative_setVideoOptions(JNIEnv *env, jobject instanc
     param.i_csp = X264_CSP_I420;
     param.i_width  = width;
     param.i_height = height;
+
+    y_len = width * height;
+    u_len = y_len / 4;
+    v_len = u_len;
+
     //参数i_rc_method表示码率控制，CQP(恒定质量)，CRF(恒定码率)，ABR(平均码率)
     //恒定码率，会尽量控制在固定码率
     param.rc.i_rc_method = X264_RC_CRF;
@@ -412,16 +285,18 @@ Java_com_hy_picture_push_PushNative_setVideoOptions(JNIEnv *env, jobject instanc
     x264_param_apply_profile(&param,"baseline");
 
     //x264_picture_t（输入图像）初始化
-    x264_picture_t pic_in;
     x264_picture_alloc(&pic_in, param.i_csp, param.i_width, param.i_height);
-
+    pic_in.i_pts = 0;
     //打开编码器
-    x264_t *x264_encoder = x264_encoder_open(&param);
-    if(x264_encoder){
-        LOGI("打开编码器成功...");
+    video_encode_handle = x264_encoder_open(&param);
+    if(video_encode_handle){
+        LOGI("打开视频编码器成功");
+    }else{
+        throwNativeError(env,INIT_FAILED);
     }
 
 }
+
 JNIEXPORT void JNICALL
 Java_com_hy_picture_push_PushNative_setAudioOptions(JNIEnv *env, jobject instance,
                                                     jint sampleRateInHz, jint channel) {
@@ -453,6 +328,123 @@ Java_com_hy_picture_push_PushNative_setAudioOptions(JNIEnv *env, jobject instanc
     LOGI("%s","音频编码器配置成功");
 
 }
+
+
+
+
+
+
+void add_264_sequence_header(unsigned char* pps,unsigned char* sps,int pps_len,int sps_len){
+    int body_size = 16 + sps_len + pps_len; //按照H264标准配置SPS和PPS，共使用了16字节
+    RTMPPacket *packet = malloc(sizeof(RTMPPacket));
+    //RTMPPacket初始化
+    RTMPPacket_Alloc(packet,body_size);
+    RTMPPacket_Reset(packet);
+
+    unsigned char * body = packet->m_body;
+    int i = 0;
+    //二进制表示：00010111
+    body[i++] = 0x17;//VideoHeaderTag:FrameType(1=key frame)+CodecID(7=AVC)
+    body[i++] = 0x00;//AVCPacketType = 0表示设置AVCDecoderConfigurationRecord
+    //composition time 0x000000 24bit ?
+    body[i++] = 0x00;
+    body[i++] = 0x00;
+    body[i++] = 0x00;
+
+    /*AVCDecoderConfigurationRecord*/
+    body[i++] = 0x01;//configurationVersion，版本为1
+    body[i++] = sps[1];//AVCProfileIndication
+    body[i++] = sps[2];//profile_compatibility
+    body[i++] = sps[3];//AVCLevelIndication
+    //?
+    body[i++] = 0xFF;//lengthSizeMinusOne,H264 视频中 NALU的长度，计算方法是 1 + (lengthSizeMinusOne & 3),实际测试时发现总为FF，计算结果为4.
+
+    /*sps*/
+    body[i++] = 0xE1;//numOfSequenceParameterSets:SPS的个数，计算方法是 numOfSequenceParameterSets & 0x1F,实际测试时发现总为E1，计算结果为1.
+    body[i++] = (sps_len >> 8) & 0xff;//sequenceParameterSetLength:SPS的长度
+    body[i++] = sps_len & 0xff;//sequenceParameterSetNALUnits
+    memcpy(&body[i], sps, sps_len);
+    i += sps_len;
+
+    /*pps*/
+    body[i++] = 0x01;//numOfPictureParameterSets:PPS 的个数,计算方法是 numOfPictureParameterSets & 0x1F,实际测试时发现总为E1，计算结果为1.
+    body[i++] = (pps_len >> 8) & 0xff;//pictureParameterSetLength:PPS的长度
+    body[i++] = (pps_len) & 0xff;//PPS
+    memcpy(&body[i], pps, pps_len);
+    i += pps_len;
+
+    //Message Type，RTMP_PACKET_TYPE_VIDEO：0x09
+    packet->m_packetType = RTMP_PACKET_TYPE_VIDEO;
+    //Payload Length
+    packet->m_nBodySize = body_size;
+    //Time Stamp：4字节
+    //记录了每一个tag相对于第一个tag（File Header）的相对时间。
+    //以毫秒为单位。而File Header的time stamp永远为0。
+    packet->m_nTimeStamp = 0;
+    packet->m_hasAbsTimestamp = 0;
+    packet->m_nChannel = 0x04; //Channel ID，Audio和Vidio通道
+    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM; //?
+    //将RTMPPacket加入队列
+    add_rtmp_packet(packet);
+
+}
+
+/**
+ * 发送h264帧信息
+ */
+void add_264_body(unsigned char *buf ,int len){
+    //去掉起始码(界定符)
+    if(buf[2] == 0x00){  //00 00 00 01
+        buf += 4;
+        len -= 4;
+    }else if(buf[2] == 0x01){ // 00 00 01
+        buf += 3;
+        len -= 3;
+    }
+    int body_size = len + 9;
+    RTMPPacket *packet = malloc(sizeof(RTMPPacket));
+    RTMPPacket_Alloc(packet,body_size);
+
+    unsigned char * body = packet->m_body;
+    //当NAL头信息中，type（5位）等于5，说明这是关键帧NAL单元
+    //buf[0] NAL Header与运算，获取type，根据type判断关键帧和普通帧
+    //00000101 & 00011111(0x1f) = 00000101
+    int type = buf[0] & 0x1f;
+    //Inter Frame 帧间压缩
+    body[0] = 0x27;//VideoHeaderTag:FrameType(2=Inter Frame)+CodecID(7=AVC)
+    //IDR I帧图像
+    if (type == NAL_SLICE_IDR) {
+        body[0] = 0x17;//VideoHeaderTag:FrameType(1=key frame)+CodecID(7=AVC)
+    }
+    //AVCPacketType = 1
+    body[1] = 0x01; /*nal unit,NALUs（AVCPacketType == 1)*/
+    body[2] = 0x00; //composition time 0x000000 24bit
+    body[3] = 0x00;
+    body[4] = 0x00;
+
+    //写入NALU信息，右移8位，一个字节的读取？
+    body[5] = (len >> 24) & 0xff;
+    body[6] = (len >> 16) & 0xff;
+    body[7] = (len >> 8) & 0xff;
+    body[8] = (len) & 0xff;
+
+    /*copy data*/
+    memcpy(&body[9], buf, len);
+
+    packet->m_hasAbsTimestamp = 0;
+    packet->m_nBodySize = body_size;
+    packet->m_packetType = RTMP_PACKET_TYPE_VIDEO;//当前packet的类型：Video
+    packet->m_nChannel = 0x04;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+//	packet->m_nTimeStamp = -1;
+    packet->m_nTimeStamp = RTMP_GetTime() - start_time;//记录了每一个tag相对于第一个tag（File Header）的相对时间
+    add_rtmp_packet(packet);
+
+}
+
+/**
+ * 将采集到视频数据进行编码
+ */
 JNIEXPORT void JNICALL
 Java_com_hy_picture_push_PushNative_fireVideo(JNIEnv *env, jobject instance, jbyteArray data_) {
     //视频数据转为YUV420P
@@ -513,12 +505,14 @@ Java_com_hy_picture_push_PushNative_fireVideo(JNIEnv *env, jobject instance, jby
 }
 
 
-JNIEXPORT void JNICALL
-Java_com_hy_picture_push_PushNative_fireAudio(JNIEnv *env, jobject instance, jbyteArray data_,
+/**
+ * 对音频采样数据进行AAC编码
+ */
+JNIEXPORT void JNICALL Java_com_hy_picture_push_PushNative_fireAudio(JNIEnv *env, jobject instance, jbyteArray data_,
                                               jint len) {
     int *pcmbuf;
     unsigned char *bitbuf;
-    jbyte* b_buffer = (*env)->GetByteArrayElements(env, data_, 0);
+    jbyte* b_buffer = (*env)->GetByteArrayElements(env, data_, NULL);
     pcmbuf = (short*) malloc(nInputSamples * sizeof(int));
     bitbuf = (unsigned char*) malloc(nMaxOutputBytes * sizeof(unsigned char));
     int nByteCount = 0;
