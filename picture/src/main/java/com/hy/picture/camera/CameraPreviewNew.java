@@ -1,0 +1,733 @@
+package com.hy.picture.camera;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Camera.PictureCallback;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.format.DateFormat;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.widget.RelativeLayout;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @Class: CameraPreview
+ * @Description: 自定义相机
+ * @author: lling(www.cnblogs.com/liuling)
+ * @Date: 2015/10/25
+ */
+public class CameraPreviewNew extends SurfaceView implements
+        SurfaceHolder.Callback, AutoFocusCallback {
+    private static final String TAG = "CameraPreview";
+
+    private int viewWidth = 0;
+    private int viewHeight = 0;
+
+    /**
+     * 监听接口
+     */
+    private OnCameraStatusListener listener;
+    private OpenCameraListener openCameraListener;
+
+    private SurfaceHolder holder;
+    private Camera camera;
+    private FocusView mFocusView;
+    public static final String PATH = Environment.getExternalStorageDirectory().toString() + "/AndroidMedia/";
+    public static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    //创建一个PictureCallback对象，并实现其中的onPictureTaken方法
+    private PictureCallback pictureCallback = new PictureCallback() {
+
+        // 该方法用于处理拍摄后的照片数据
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Bitmap bm0 = BitmapFactory.decodeByteArray(data, 0, data.length);
+            long dateTaken = System.currentTimeMillis();
+            String filename = DateFormat.format("yyyy-MM-dd HH-mm-ss", dateTaken)
+                    .toString() + ".jpg";
+
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap bm1 = Bitmap.createBitmap(bm0, 0, 0, bm0.getWidth(), bm0.getHeight(), matrix, true);
+            Uri source =
+                    insertImage(getContext().getContentResolver(), filename, dateTaken, PATH,
+                    filename, bm1, data);
+
+//            BitmapUtils.RotateBitmapResult rotateResult =
+//                    BitmapUtils.rotateBitmapByExif(bm0, getContext(), source);
+//            int degree = rotateResult.degrees;
+//            if (degree != 0) {
+//                Matrix m = new Matrix();
+//                m.postRotate(0, (float) bm0.getWidth() / 2, (float) bm0.getHeight() / 2);
+//                bm0 = Bitmap.createBitmap(bm0, 0, 0, bm0.getWidth(), bm0.getHeight(), m, true);
+//
+//                source = insertImage(getContext().getContentResolver(), filename, dateTaken, PATH,
+//                        filename, bm0, data);
+//                setPictureDegreeZero(source.getPath());
+//            }
+            // 停止照片拍摄
+            try {
+                camera.stopPreview();
+            } catch (Exception e) {
+            }
+            // 调用结束事件
+            if (null != listener) {
+                listener.onCameraStopped(source);
+            }
+        }
+    };
+
+    private Uri insertImage(ContentResolver cr, String name, long dateTaken,
+                            String directory, String filename, Bitmap source, byte[] jpegData) {
+        OutputStream outputStream = null;
+        String filePath = directory + filename;
+        try {
+            File dir = new File(directory);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File file = new File(directory, filename);
+            if (file.createNewFile()) {
+                outputStream = new FileOutputStream(file);
+                if (source != null) {
+                    source.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                } else {
+                    outputStream.write(jpegData);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+            return null;
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            return null;
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (Throwable t) {
+                }
+            }
+        }
+        ContentValues values = new ContentValues(7);
+        values.put(MediaStore.Images.Media.TITLE, name);
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
+        values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.Images.Media.DATA, filePath);
+        return cr.insert(IMAGE_URI, values);
+    }
+
+    private void setPictureDegreeZero(String path) {
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+//修正图片的旋转角度，设置其不旋转。这里也可以设置其旋转的角度，可以传值过去，
+//例如旋转90度，传值ExifInterface.ORIENTATION_ROTATE_90，需要将这个值转换为String类型的
+            exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, "90");
+            exifInterface.saveAttributes();
+        } catch (IOException e) {
+// TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    // Preview类的构造方法
+    public CameraPreviewNew(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        // 获得SurfaceHolder对象
+        holder = getHolder();
+        // 指定用于捕捉拍照事件的SurfaceHolder.Callback对象
+        holder.addCallback(this);
+        // 设置SurfaceHolder对象的类型
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+//        setOnTouchListener(onTouchListener);
+    }
+
+    // 在surface创建时激发
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.e(TAG, "==surfaceCreated==");
+        Log.e(TAG, Utils.getScreenWH(getContext()).widthPixels + "  " +
+                Utils.getScreenWH(getContext()).heightPixels + "");
+        if (!Utils.checkCameraHardware(getContext())) {
+//            Toast.makeText(getContext(), "摄像头打开失败！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // 获得Camera对象
+        camera = getCameraInstance();
+        try {
+            // 设置用于显示拍照摄像的SurfaceHolder对象
+            if (camera != null && holder != null) {
+                //以防camera禁止打开
+                setOnTouchListener(onTouchListener);
+                camera.setPreviewDisplay(holder);
+                updateCameraParameters();
+                if (camera != null) {
+                    camera.startPreview();
+                }
+                setFocus();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 释放手机摄像头
+            camera.release();
+            camera = null;
+        }
+
+    }
+
+    // 在surface销毁时激发
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.e(TAG, "==surfaceDestroyed==");
+//        camera.stopPreview();
+        // 释放手机摄像头
+        if (camera != null) {
+            camera.release();
+            camera = null;
+        }
+    }
+
+    // 在surface的大小发生改变时激发
+    @Override
+    public void surfaceChanged(final SurfaceHolder holder, int format, int w,
+                               int h) {
+        // stop preview before making changes
+        try {
+            camera.stopPreview();
+        } catch (Exception e) {
+            // ignore: tried to stop a non-existent preview
+        }
+        // set preview size and make any resize, rotate or
+        // reformatting changes here
+        updateCameraParameters();
+        // start preview with new settings
+        try {
+            camera.setPreviewDisplay(holder);
+            camera.startPreview();
+
+        } catch (Exception e) {
+            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+        }
+        setFocus();
+    }
+
+    /**
+     * 点击显示焦点区域
+     */
+    OnTouchListener onTouchListener = new OnTouchListener() {
+        @SuppressWarnings("deprecation")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int width = mFocusView.getWidth();
+                int height = mFocusView.getHeight();
+                mFocusView.setX(event.getX() - (width / 2));
+                mFocusView.setY(event.getY() - (height / 2));
+                mFocusView.beginFocus();
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                focusOnTouch(event);
+            }
+            return true;
+        }
+    };
+
+    /**
+     * 获取摄像头实例
+     *
+     * @return
+     */
+    private Camera getCameraInstance() {
+        Camera c = null;
+        try {
+            int cameraCount = 0;
+            Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+            cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+            for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
+                Camera.getCameraInfo(camIdx, cameraInfo); // get camerainfo
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                    try {
+                        c = Camera.open(camIdx);   //打开后置摄像头
+                    } catch (RuntimeException e) {
+//                        Toast.makeText(getContext(), "摄像头打开失败！", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            if (c == null) {
+                c = Camera.open(0); // attempt to get a Camera instance
+            }
+        } catch (Exception e) {
+//            Toast.makeText(getContext(), "摄像头打开失败！", Toast.LENGTH_SHORT).show();
+            if (openCameraListener != null) {
+                openCameraListener.openCameraFailure();
+            }
+        }
+        return c;
+    }
+
+    private void updateCameraParameters() {
+        if (camera != null) {
+            Camera.Parameters p = null;
+            try {
+                p = camera.getParameters();
+                setParameters(p);
+                camera.setParameters(p);
+                camera.setDisplayOrientation(90);
+//                p.setRotation(90);
+            } catch (Exception e) {
+                try {
+                    Camera.Size previewSize = findBestPreviewSize(p);
+                    if (p != null) {
+                        p.setPreviewSize(previewSize.width, previewSize.height);
+                        List<Camera.Size> pictureSizes = p.getSupportedPictureSizes();
+                        Camera.Size size2 = getCurrentScreenSize(pictureSizes, 1);
+                        p.setPictureSize(size2.width, size2.height);
+                        camera.setParameters(p);
+                        camera.setDisplayOrientation(90);
+//                        p.setRotation(90);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        }
+    }
+
+    /**
+     * @param p
+     */
+    private void setParameters(Camera.Parameters p) {
+        List<String> focusModes = p.getSupportedFocusModes();
+        if (focusModes
+                .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            p.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
+
+        long time = new Date().getTime();
+        p.setGpsTimestamp(time);
+        // 设置照片格式
+        p.setPictureFormat(PixelFormat.JPEG);
+        Camera.Size previewSize = findPreviewSizeByScreen(p);
+        p.setPreviewSize(previewSize.width, previewSize.height);
+        List<Camera.Size> pictureSizes = p.getSupportedPictureSizes();
+//        Camera.Size size2 = getCurrentScreenSize(pictureSizes, 1);
+        Camera.Size size2 = getOptimalPreviewSize(pictureSizes, previewSize.width, previewSize.height);
+
+        for (Camera.Size s :
+                pictureSizes) {
+            Log.e("supportPic:", s.width + " " + s.height + "\n");
+        }
+
+//        Camera.Size size2 = MyCamPara.getInstance().getPictureSize(pictureSizes,previewSize.width);
+        Log.e("preSize:", previewSize.width + "  " + previewSize.height);
+        Log.e("picsize:", size2.width + "  " + size2.height);
+        p.setPictureSize(size2.width, size2.height);
+        p.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+    }
+
+
+    /**
+     * @param sizes
+     * @param w
+     * @param h
+     * @return
+     */
+    private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) w / h;
+        if (sizes == null) {
+            return null;
+        }
+
+        Camera.Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        // Try to find an size match aspect ratio and size
+        for (Camera.Size size : sizes) {
+
+            double ratio = (double) size.width / size.height;
+            Log.e("Size:", "width:" + size.width + " height:" + size.height + " targetRatio:" + targetRatio + " ratio:" + ratio);
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) {
+                continue;
+            }
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        // Cannot find the one match the aspect ratio, ignore the requirement
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
+
+    /**
+     * 获得最接近频幕宽度的尺寸
+     *
+     * @param sizeList
+     * @param n        放大几倍 （>0)
+     * @return
+     */
+    private Camera.Size getCurrentScreenSize(List<Camera.Size> sizeList, int n) {
+        if (sizeList != null && sizeList.size() > 0) {
+            int screenWidth = (viewWidth != 0 ? viewWidth : Utils.getScreenWH(getContext()).widthPixels) * n;
+            int[] arry = new int[sizeList.size()];
+            int temp = 0;
+            for (Camera.Size size : sizeList) {
+                arry[temp++] = Math.abs(size.width - screenWidth);
+            }
+            temp = 0;
+            int index = 0;
+            for (int i = 0; i < arry.length; i++) {
+                if (i == 0) {
+                    temp = arry[i];
+                    index = 0;
+                } else {
+                    if (arry[i] < temp) {
+                        index = i;
+                        temp = arry[i];
+                    }
+                }
+            }
+            return sizeList.get(index);
+        }
+        return null;
+    }
+
+    // 进行拍照，并将拍摄的照片传入PictureCallback接口的onPictureTaken方法
+    public void takePicture() {
+        if (camera != null) {
+            try {
+                camera.takePicture(null, null, pictureCallback);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    //监听打开相机失败的情况
+    public void setOpenCameraListener(OpenCameraListener listener) {
+        this.openCameraListener = listener;
+    }
+
+    // 设置监听事件
+    public void setOnCameraStatusListener(OnCameraStatusListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onAutoFocus(boolean success, Camera camera) {
+
+    }
+
+    public void start() {
+        if (camera != null) {
+            camera.startPreview();
+        }
+    }
+
+    public void stop() {
+        if (camera != null) {
+            camera.stopPreview();
+        }
+    }
+
+    /**
+     * 相机拍照监听接口
+     */
+    public interface OnCameraStatusListener {
+        // 相机拍照结束事件
+        void onCameraStopped(Uri uri);
+    }
+
+    public interface OpenCameraListener {
+        //打开相机成功或失败的状态
+        void openCameraFailure();
+    }
+
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec) {
+        viewWidth = MeasureSpec.getSize(widthSpec);
+        viewHeight = MeasureSpec.getSize(heightSpec);
+        super.onMeasure(
+                MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY));
+    }
+
+    /**
+     * 将预览大小设置为屏幕大小
+     *
+     * @param parameters
+     * @return
+     */
+    private Camera.Size findPreviewSizeByScreen(Camera.Parameters parameters) {
+        if (viewWidth != 0 && viewHeight != 0) {
+            return camera.new Size(Math.max(viewWidth, viewHeight),
+                    Math.min(viewWidth, viewHeight));
+        } else {
+            return camera.new Size(Utils.getScreenWH(getContext()).heightPixels,
+                    Utils.getScreenWH(getContext()).widthPixels);
+        }
+    }
+
+    private Camera.Size findBestPictureSize(Camera.Parameters parameters) {
+        String pictureSizeValueString = parameters.get("picture-size-values");
+
+        // saw this on Xperia
+        if (pictureSizeValueString == null) {
+            pictureSizeValueString = parameters.get("picture-size-value");
+        }
+
+        if (pictureSizeValueString == null) {
+            return camera.new Size(Utils.getScreenWH(getContext()).widthPixels,
+                    Utils.getScreenWH(getContext()).heightPixels);
+        }
+
+        Log.d("tag", "pictureSizeValueString : " + pictureSizeValueString);
+        int bestX = 0;
+        int bestY = 0;
+
+        float tmpRadio = 0;
+        float viewRadio = 0;
+
+        if (viewWidth != 0 && viewHeight != 0) {
+            viewRadio = Math.min((float) viewWidth, (float) viewHeight)
+                    / Math.max((float) viewWidth, (float) viewHeight);
+        }
+
+        String[] COMMA_PATTERN = pictureSizeValueString.split(",");
+        for (String pictureSizeString : COMMA_PATTERN) {
+            pictureSizeString = pictureSizeString.trim();
+
+            int dimPosition = pictureSizeString.indexOf('x');
+            if (dimPosition == -1) {
+                Log.e(TAG, "Bad pictureSizeString:" + pictureSizeString);
+                continue;
+            }
+
+            int newX = 0;
+            int newY = 0;
+
+            try {
+                newX = Integer.parseInt(pictureSizeString.substring(0, dimPosition));
+                newY = Integer.parseInt(pictureSizeString.substring(dimPosition + 1));
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Bad pictureSizeString:" + pictureSizeString);
+                continue;
+            }
+
+           /* Point screenResolution = new Point (Utils.getScreenWH(getContext()).widthPixels,
+                    Utils.getScreenWH(getContext()).heightPixels);
+
+            int newDiff = Math.abs(newX - screenResolution.x)+Math.abs(newY- screenResolution.y);
+            if(newDiff == diff)
+            {
+                bestX = newX;
+                bestY = newY;
+                break;
+            } else if(newDiff > diff){
+                if((3 * newX) == (4 * newY)) {
+                    bestX = newX;
+                    bestY = newY;
+                    diff = newDiff;
+                }
+            }*/
+
+            float radio = Math.min(newX, newY) / Math.max(newX, newY);
+            if (tmpRadio == 0) {
+                tmpRadio = radio;
+                bestX = newX;
+                bestY = newY;
+            } else if ((Math.abs(radio - viewRadio)) > (Math.abs(tmpRadio - viewRadio))) {
+                tmpRadio = radio;
+                bestX = newX;
+                bestY = newY;
+            }
+
+        }
+
+        if (bestX > 0 && bestY > 0) {
+            return camera.new Size(bestX, bestY);
+        }
+        return null;
+    }
+
+    /**
+     * 找到最合适的显示分辨率 （防止预览图像变形）
+     *
+     * @param parameters
+     * @return
+     */
+    private Camera.Size findBestPreviewSize(Camera.Parameters parameters) {
+
+        // 系统支持的所有预览分辨率
+        String previewSizeValueString = null;
+        previewSizeValueString = parameters.get("preview-size-values");
+
+        if (previewSizeValueString == null) {
+            previewSizeValueString = parameters.get("preview-size-value");
+        }
+
+        if (previewSizeValueString == null) { // 有些手机例如m9获取不到支持的预览大小 就直接返回屏幕大小
+            return camera.new Size(Utils.getScreenWH(getContext()).widthPixels,
+                    Utils.getScreenWH(getContext()).heightPixels);
+        }
+        float bestX = 0;
+        float bestY = 0;
+
+        float tmpRadio = 0;
+        float viewRadio = 0;
+
+        if (viewWidth != 0 && viewHeight != 0) {
+            viewRadio = Math.min((float) viewWidth, (float) viewHeight)
+                    / Math.max((float) viewWidth, (float) viewHeight);
+        }
+
+        String[] COMMA_PATTERN = previewSizeValueString.split(",");
+        for (String prewsizeString : COMMA_PATTERN) {
+            prewsizeString = prewsizeString.trim();
+
+            int dimPosition = prewsizeString.indexOf('x');
+            if (dimPosition == -1) {
+                continue;
+            }
+
+            float newX = 0;
+            float newY = 0;
+
+            try {
+                newX = Float.parseFloat(prewsizeString.substring(0, dimPosition));
+                newY = Float.parseFloat(prewsizeString.substring(dimPosition + 1));
+            } catch (NumberFormatException e) {
+                continue;
+            }
+
+            float radio = Math.min(newX, newY) / Math.max(newX, newY);
+            if (tmpRadio == 0) {
+                tmpRadio = radio;
+                bestX = newX;
+                bestY = newY;
+            } else if ((Math.abs(radio - viewRadio)) < (Math.abs(tmpRadio - viewRadio))) {
+                tmpRadio = radio;
+                bestX = newX;
+                bestY = newY;
+            }
+        }
+
+        if (bestX > 0 && bestY > 0) {
+            return camera.new Size((int) bestX, (int) bestY);
+        }
+        return null;
+    }
+
+    /**
+     * 设置焦点和测光区域
+     *
+     * @param event
+     */
+    public void focusOnTouch(MotionEvent event) {
+
+        int[] location = new int[2];
+        RelativeLayout relativeLayout = (RelativeLayout) getParent();
+        relativeLayout.getLocationOnScreen(location);
+
+        Rect focusRect = Utils.calculateTapArea(mFocusView.getWidth(),
+                mFocusView.getHeight(), 1f, event.getRawX(), event.getRawY(),
+                location[0], location[0] + relativeLayout.getWidth(), location[1],
+                location[1] + relativeLayout.getHeight());
+        Rect meteringRect = Utils.calculateTapArea(mFocusView.getWidth(),
+                mFocusView.getHeight(), 1.5f, event.getRawX(), event.getRawY(),
+                location[0], location[0] + relativeLayout.getWidth(), location[1],
+                location[1] + relativeLayout.getHeight());
+
+        Camera.Parameters parameters = camera.getParameters();
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+
+        if (parameters.getMaxNumFocusAreas() > 0) {
+            List<Camera.Area> focusAreas = new ArrayList<Camera.Area>();
+            focusAreas.add(new Camera.Area(focusRect, 1000));
+
+            parameters.setFocusAreas(focusAreas);
+        }
+
+        if (parameters.getMaxNumMeteringAreas() > 0) {
+            List<Camera.Area> meteringAreas = new ArrayList<Camera.Area>();
+            meteringAreas.add(new Camera.Area(meteringRect, 1000));
+
+            parameters.setMeteringAreas(meteringAreas);
+        }
+
+        try {
+            camera.setParameters(parameters);
+        } catch (Exception e) {
+        }
+        camera.autoFocus(this);
+    }
+
+    /**
+     * 设置聚焦的图片
+     *
+     * @param focusView
+     */
+    public void setFocusView(FocusView focusView) {
+        this.mFocusView = focusView;
+    }
+
+    /**
+     * 设置自动聚焦，并且聚焦的圈圈显示在屏幕中间位置
+     */
+    public void setFocus() {
+        if (!mFocusView.isFocusing()) {
+            try {
+                camera.autoFocus(this);
+                mFocusView.setX((Utils.getWidthInPx(getContext()) - mFocusView.getWidth()) / 2);
+                mFocusView.setY((Utils.getHeightInPx(getContext()) - mFocusView.getHeight()) / 2);
+                mFocusView.beginFocus();
+            } catch (Exception e) {
+            }
+        }
+    }
+
+}

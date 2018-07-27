@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <android.view.SurfaceView
+    <SurfaceView
         android:id="@+id/surface"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center" />
 
     <LinearLayout
@@ -31,5 +31,11 @@
             android:text="切换摄像头"
             android:onClick="mSwitchCamera"/>
     </LinearLayout>
+
+    <com.hy.picture.camera.FocusView
+        android:id="@+id/view_focus"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

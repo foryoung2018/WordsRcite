@@ -7,7 +7,7 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <!--相机  有bug-->
-        <activity android:name=".CameraActivity"/>
+        <!--<activity android:name=".CameraActivity"/>-->
         <!-- 显示图片-->
         <activity android:name=".PictureActivity"/>
         <!-- 相机预览 textureview  预览回调-->
