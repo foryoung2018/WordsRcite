@@ -26,7 +26,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PushActivity">
+        <activity android:name=".TextureviewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,11 +36,13 @@
         <!--相机  有bug-->
         <!--<activity android:name=".CameraActivity"/>-->
         <!-- 显示图片-->
-        <activity android:name=".PictureActivity"/>
+        <!--<activity android:name=".PictureActivity"/>-->
         <!-- 相机预览 textureview  预览回调-->
         <!--<activity android:name=".TextureviewActivity"/>-->
         <!-- 相机预览 surfaceview -->
-        <activity android:name=".SurfaceViewActivity"/>
+        <!--<activity android:name=".SurfaceViewActivity"/>-->
+        <!-- 推流 -->
+        <!--<activity android:name=".PushActivity"/>-->
 
         <!--<activity android:name=".PushActivity"/>-->
     </application>

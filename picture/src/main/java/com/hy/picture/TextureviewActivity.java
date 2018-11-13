@@ -7,6 +7,9 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.TextureView;
+import android.widget.RelativeLayout;
+
+import com.hy.picture.widget.GestureViewBinder;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,6 +21,8 @@ public class TextureviewActivity extends Activity  implements TextureView.Surfac
 
     @BindView(R.id.textureview)
     TextureView textureview;
+    @BindView(R.id.rlcontainer)
+    RelativeLayout rlcontainer;
     Camera camera;
 
     @Override
@@ -37,6 +42,9 @@ public class TextureviewActivity extends Activity  implements TextureView.Surfac
             }
         });
         getCallback();
+
+        GestureViewBinder bind = GestureViewBinder.bind(this, rlcontainer, textureview);
+        bind.setFullGroup(true);
     }
 
     private void getCallback() {
