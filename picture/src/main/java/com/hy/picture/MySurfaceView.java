@@ -7,23 +7,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Environment;
+import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.File;
-
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 public class MySurfaceView extends SurfaceView implements
         SurfaceHolder.Callback
@@ -95,7 +85,7 @@ public class MySurfaceView extends SurfaceView implements
 
 
 
-        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getPath() + File.separator + "Pictures/5.jpg");  // 获取bitmap
+        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getPath() + File.separator + "Pictures/img.jpg");  // 获取bitmap
         Canvas canvas = holder.lockCanvas();  // 先锁定当前surfaceView的画布
 //        canvas.drawBitmap(bitmap, 0, 0, paint); //执行绘制操作
 
