@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RatioFrameLayout">
+        <attr name="frameLayoutratio" format="float" />
+        <attr name="frameLayoutwithBackground" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="MaskLayout">
+        <attr name="maskLayoutratio" format="float" />
+        <attr name="maskLayoutvertPadding" format="integer" />
+    </declare-styleable>
+</resources>

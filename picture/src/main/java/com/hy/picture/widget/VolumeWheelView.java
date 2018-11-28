@@ -18,10 +18,6 @@ import android.view.ViewConfiguration;
 import android.widget.Scroller;
 
 
-/**
- * 自定义刻度尺，支持惯性滚动
- * 用于dongci项目音量调节
- */
 public class VolumeWheelView extends View {
 
     public static final String TAG = VolumeWheelView.class.getSimpleName();
