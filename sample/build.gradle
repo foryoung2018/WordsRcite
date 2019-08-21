@@ -115,6 +115,6 @@ dependencies {
 }
 
 //我们自定义的
-testCreatJavaConfig{
-    str = "动态生成java类的字符串"
-}
+//testCreatJavaConfig{
+//    str = "动态生成java类的字符串"
+//}

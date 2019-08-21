@@ -22,7 +22,7 @@ public class FileUtil {
         if (!FileUtil.makeDir(tmpDir)) {
             tmpDir = context.getExternalFilesDir(sampleDir).getAbsolutePath();
             if (!FileUtil.makeDir(sampleDir)) {
-                throw new RuntimeException("create model resources dir failed :" + tmpDir);
+//                throw new RuntimeException("create model resources dir failed :" + tmpDir);
             }
         }
         return tmpDir;

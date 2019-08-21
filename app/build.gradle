@@ -72,6 +72,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.orhanobut:logger:2.1.1'
+    compile 'org.greenrobot:eventbus:3.1.1'
 
     debugCompile 'com.antfortune.freeline:runtime:0.8.8'
     releaseCompile 'com.antfortune.freeline:runtime-no-op:0.8.8'
