@@ -310,3 +310,10 @@ http://www.cnblogs.com/renhui/p/7472778.html
 //TODO Android 音视频开发(五)：使用 MediaExtractor 和 MediaMuxer API 解析和封装 mp4 文件 http://www.cnblogs.com/renhui/p/7474096.html
 --------------------------------------------------------------------------------
 
+### ---2019/08/28
+
+surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY); // 设置自己刷新还是手动调起刷新
+实现分割图像
+
+//TODO glsl语法
+//kotlin 语法

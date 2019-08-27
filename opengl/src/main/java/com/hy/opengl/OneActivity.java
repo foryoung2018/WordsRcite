@@ -28,7 +28,7 @@ public class OneActivity extends AppCompatActivity {
         ImageTextureRender triangle = new ImageTextureRender(this);
 //        Triangle triangle = new Triangle(this);
         surfaceView.setRenderer(triangle);
-        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 //        EventBus.getDefault().register(this);
     }
 

@@ -7,6 +7,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,6 +17,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class ImageTextureRender implements GLSurfaceView.Renderer {
+    private static final String TAG = ImageTextureRender.class.getSimpleName();
     private final String vertexShaderCode =
             "attribute vec4 vPosition;\n" +
                     "attribute vec2 vCoordinate;\n" +
@@ -28,26 +30,38 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
                     "    aCoordinate=vCoordinate;\n" +
                     "}";
 
-//    private String vertexShaderCode = " uniform mat4 vMatrix;\n" +
-//            "                attribute vec4 vMatrix;\n" +
-//            "                attribute vec2 vCoordinate;\n" +
-//            "                varying vec2 aCoordinate;\n" +
-//            "                void main() {\n" +
-//                    "    gl_Position=vMatrix*vPosition;\n" +
-//                    "    aCoordinate=vCoordinate;\n" +
-//            "                }";
 
-//    private String fragmentShaderCode = " precision mediump float;\n" +
-//            "                varying vec2 aCoordinate;\n" +
-//            "                uniform sampler2D vTexture;\n" +
-//            "                void main() {\n" +
-//            "                    gl_FragColor = texture2D(vTexture, aCoordinate);\n" +
-//            "                }";
+    private int xLocation = 0;
+    private int yLocation = 0;
+    private long startTime = 0;
+
+    private final String FRAGMENT_SHADER ="  precision mediump float;\n" +
+            "                varying vec2 aCoordinate;\n" +
+            "                uniform sampler2D vTexture;\n" +
+            "                uniform float xV;\n" +
+            "                uniform float yV;\n" +
+            "\n" +
+            "                vec2 translate(vec2 srcCoord, float x, float y) {\n" +
+            "                    if (mod(srcCoord.y, 0.25) > 0.125) {\n" +
+            "                        return vec2(srcCoord.x + x, srcCoord.y + y);\n" +
+            "                    } else {\n" +
+            "                        return vec2(srcCoord.x - x, srcCoord.y + y);\n" +
+            "                    }\n" +
+            "                }\n" +
+            "\n" +
+            "                void main() {\n" +
+            "                    vec2 offsetTexCoord = translate(aCoordinate, xV, yV);\n" +
+            "\n" +
+            "                    if (offsetTexCoord.x >= 0.0 && offsetTexCoord.x <= 1.0 &&\n" +
+            "                        offsetTexCoord.y >= 0.0 && offsetTexCoord.y <= 1.0) {\n" +
+            "                        gl_FragColor = texture2D(vTexture, offsetTexCoord);\n" +
+            "                    }\n" +
+            "                }";
 
     private final String fragmentShaderCode =
             "precision mediump float;\n" +
                     "\n" +
-                    "uniform sampler2D vTexture;\n" +
+                    "uniform sampler2D aCoordinate;\n" +
                     "uniform int vChangeType;\n" +
                     "uniform vec3 vChangeColor;\n" +
                     "\n" +
@@ -61,7 +75,7 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
                     "}\n" +
                     "\n" +
                     "void main(){\n" +
-                    "    vec4 nColor=texture2D(vTexture,aCoordinate);\n" +
+                    "    vec4 nColor=texture2D(aCoordinate,aCoordinate);\n" +
                     "   if(vChangeType==1){\n" +
                     "        float c=nColor.r*vChangeColor.r+nColor.g*vChangeColor.g+nColor.b*vChangeColor.b;\n" +
                     "        gl_FragColor=vec4(c,c,c,nColor.a);\n" +
@@ -95,7 +109,7 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
 
     private int mProgram;
 
-    private final float[] sCoord={
+    private final float[] tex_vertex ={
 //            0.0f,0.0f,
 //            0.0f,1.0f,
 //            1.0f,0.0f,
@@ -105,15 +119,9 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
     };
 
 
-    private float[]  POINT_DATA2 = {-0.5f, -0.5f,
-            -0.5f, 0.5f,
-            0.5f, 0.5f,
-            0.5f, -0.5f};
+    private float[]  POINT_DATA2 = {-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f};
 
-    private float[]  POINT_DATA = {2 * -0.5f,  -0.5f * 2,
-            2 * -0.5f, 0.5f * 2,
-            2 * 0.5f, 0.5f * 2,
-            2 * 0.5f, -0.5f * 2};
+    private float[] pint_data = {-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f};
 
 
     Bitmap mBitmap;
@@ -125,9 +133,9 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
     private int hIsHalf;
     private int glHUxy;
 
-    private FloatBuffer bPos;
+    private FloatBuffer verBuffer;
     private FloatBuffer aPos;
-    private FloatBuffer bCoord;
+    private FloatBuffer pointBuffer;
 
     public ImageTextureRender(Context context) {
         this.context = context;
@@ -149,23 +157,23 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
         int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
         int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentShaderCode);
+                FRAGMENT_SHADER);
 
-        ByteBuffer bb=ByteBuffer.allocateDirect(POINT_DATA2.length*4);
+        ByteBuffer bb=ByteBuffer.allocateDirect(tex_vertex.length*4);
         bb.order(ByteOrder.nativeOrder());
-        bPos=bb.asFloatBuffer();
-        bPos.put(POINT_DATA2);
-        bPos.position(0);
-        ByteBuffer aa=ByteBuffer.allocateDirect(POINT_DATA.length*4);
+        verBuffer =bb.asFloatBuffer();
+        verBuffer.put(tex_vertex);
+        verBuffer.position(0);
+        ByteBuffer aa=ByteBuffer.allocateDirect(pint_data.length*4);
         aa.order(ByteOrder.nativeOrder());
         aPos=aa.asFloatBuffer();
-        aPos.put(POINT_DATA);
+        aPos.put(pint_data);
         aPos.position(0);
-        ByteBuffer cc=ByteBuffer.allocateDirect(sCoord.length*4);
+        ByteBuffer cc=ByteBuffer.allocateDirect(pint_data.length*4);
         cc.order(ByteOrder.nativeOrder());
-        bCoord=cc.asFloatBuffer();
-        bCoord.put(sCoord);
-        bCoord.position(0);
+        pointBuffer =cc.asFloatBuffer();
+        pointBuffer.put(pint_data);
+        pointBuffer.position(0);
 
 
 //        创建一个空的OpenGLES程序
@@ -179,22 +187,29 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
 //        mProgram=ShaderUtils.createProgram(context.getResources(),vertex,fragment);
         glHPosition=GLES20.glGetAttribLocation(mProgram,"vPosition");
         glHCoordinate=GLES20.glGetAttribLocation(mProgram,"vCoordinate");
-        glHTexture=GLES20.glGetUniformLocation(mProgram,"vTexture");
+        glHTexture=GLES20.glGetUniformLocation(mProgram,"aCoordinate");
         glHMatrix=GLES20.glGetUniformLocation(mProgram,"vMatrix");
 //        hIsHalf=GLES20.glGetUniformLocation(mProgram,"vIsHalf");
 //        glHUxy=GLES20.glGetUniformLocation(mProgram,"uXY");
 
 
         onDrawCreatedSet(mProgram);
-        GLES20.glVertexAttribPointer(glHCoordinate,2,GLES20.GL_FLOAT,false,0,bCoord);
+        GLES20.glVertexAttribPointer(glHPosition,2,GLES20.GL_FLOAT,false,0, pointBuffer);
+        GLES20.glEnableVertexAttribArray(glHPosition);
+        GLES20.glVertexAttribPointer(glHCoordinate,2,GLES20.GL_FLOAT,false,0, verBuffer);
         GLES20.glEnableVertexAttribArray(glHCoordinate);
+        //传入顶点坐标
+
         GLES20.glEnable(GL10.GL_BLEND);
         GLES20.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public void onDrawCreatedSet(int mProgram) {
-        hChangeType=GLES20.glGetUniformLocation(mProgram,"vChangeType");
-        hChangeColor=GLES20.glGetUniformLocation(mProgram,"vChangeColor");
+//        hChangeType=GLES20.glGetUniformLocation(mProgram,"vChangeType");
+//        hChangeColor=GLES20.glGetUniformLocation(mProgram,"vChangeColor");
+        startTime = System.currentTimeMillis();
+        xLocation = GLES20.glGetUniformLocation(mProgram,"xV");
+        yLocation = GLES20.glGetUniformLocation(mProgram,"yV");
     }
 
     @Override
@@ -235,8 +250,12 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
 //        onDrawSet();
         GLES20.glUniformMatrix4fv(glHMatrix,1,false,mMVPMatrix,0);
 
-        textureId1=createTexture1();
+//        textureId1=createTexture1();
         textureId=createTexture();
+        double intensity = Math.sin((System.currentTimeMillis() - startTime) / 1000.0) * 0.5;
+        Log.d(TAG, "onDrawFrame() called with: intensity = [" + intensity + "]");
+        GLES20.glUniform1f(xLocation, (float) intensity);
+        GLES20.glUniform1f(yLocation, 0.0f);
 
     }
 
@@ -259,10 +278,7 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
     private int createTexture(){
         int[] texture=new int[1];
         if(mBitmap!=null&&!mBitmap.isRecycled()){
-            bPos.position(0);
-            //传入顶点坐标
-            GLES20.glVertexAttribPointer(glHPosition,2,GLES20.GL_FLOAT,false,0,bPos);
-            GLES20.glEnableVertexAttribArray(glHPosition);
+
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
             //生成纹理
             GLES20.glGenTextures(1,texture,0);
@@ -281,9 +297,9 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
 
             GLES20.glEnableVertexAttribArray(glHCoordinate);
             //传入纹理坐标
-//            GLES20.glVertexAttribPointer(glHCoordinate,2,GLES20.GL_FLOAT,false,0,bCoord);
+//            GLES20.glVertexAttribPointer(glHCoordinate,2,GLES20.GL_FLOAT,false,0,pointBuffer);
             GLES20.glUniform1i(glHTexture, 0);
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,4);
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN,0,4);
             return texture[0];
         }
         return 0;
@@ -312,7 +328,7 @@ public class ImageTextureRender implements GLSurfaceView.Renderer {
 
             GLES20.glEnableVertexAttribArray(glHCoordinate);
             //传入纹理坐标
-//            GLES20.glVertexAttribPointer(glHCoordinate,2,GLES20.GL_FLOAT,false,0,bCoord);
+//            GLES20.glVertexAttribPointer(glHCoordinate,2,GLES20.GL_FLOAT,false,0,pointBuffer);
             GLES20.glUniform1i(glHTexture, 0);
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,4);
             return texture[0];
