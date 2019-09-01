@@ -1,10 +1,13 @@
 package com.hy.opengl;
 
+import android.content.Intent;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -18,6 +21,8 @@ public class OneActivity extends AppCompatActivity {
 
     @BindView(R.id.surfaceView)
     GLSurfaceView surfaceView;
+    @BindView(R.id.btVideo)
+    Button btVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,13 @@ public class OneActivity extends AppCompatActivity {
         surfaceView.setRenderer(triangle);
         surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 //        EventBus.getDefault().register(this);
+        btVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OneActivity.this, VideoActivity.class));
+            }
+        });
+
     }
 
 
